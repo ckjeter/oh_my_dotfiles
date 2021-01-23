@@ -77,6 +77,7 @@ set-window-option -g window-status-format "#[bg=colour239,fg=colour237,noitalics
 
 set -g @prefix_highlight_fg 'colour239' # default is 'colour231'
 set -g @prefix_highlight_bg 'colour167'  # default is 'colour04'
+set -g @prefix_highlight_copy_mode_attr 'bg=yellow, fg=colour239'
 set -g @prefix_highlight_show_copy_mode 'on'
 set -g @prefix_highlight_show_sync_mode 'on'
 set -g @prefix_highlight_prefix_prompt 'Wait'

@@ -57,11 +57,12 @@ Plug 'nvie/vim-flake8'
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'ryanoasis/vim-devicons'
 Plug 'tell-k/vim-autopep8'
+Plug 'morhetz/gruvbox'
 
 call plug#end()
 
 if !empty(glob('~/.vim/autoload/plug.vim'))
-	colorscheme dracula
+	colorscheme gruvbox
 endif
 
 "airline------------------------------
