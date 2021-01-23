@@ -1,0 +1,101 @@
+"General Setting------------------------------
+syntax on
+set encoding=utf-8
+set t_Co=256
+set background=dark
+set tabstop=4 softtabstop=4 shiftwidth=4
+set guifont=Fira\ Code:h12
+set scrolloff=10
+set ai
+set nowrap
+set number
+set ruler
+set hlsearch
+set cursorline
+set hidden
+set clipboard=unnamedplus
+set autoread
+set completeopt-=preview
+
+"nmap---------------------------------
+map <leader>t :TagbarToggle<CR>
+map <leader>f :NERDTreeToggle<CR>
+nmap <C-P> :Files<CR>
+nmap <C-e> :Buffers<CR>
+let g:fzf_action = { 'ctrl-e': 'edit' }
+
+"plugins------------------------------
+set nocompatible              " be iMproved, required
+filetype off                  " required
+if empty(glob('~/.vim/autoload/plug.vim'))
+	silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+	\ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+	autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+call plug#begin('~/.vim/plugged')
+"
+"if empty(glob('~/.vim/autoload/plug.vim'))
+"	silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+"	\ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+"	autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+"endif
+"call plug#begin('~/.vim/plugged')
+
+Plug 'gmarik/vundle'
+
+Plug 'preservim/nerdtree'
+Plug 'preservim/tagbar'
+Plug 'vim-airline/vim-airline'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plug 'jiangmiao/auto-pairs'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'ycm-core/YouCompleteMe'
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+Plug 'nvie/vim-flake8'
+Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'ryanoasis/vim-devicons'
+Plug 'tell-k/vim-autopep8'
+
+call plug#end()
+
+if !empty(glob('~/.vim/autoload/plug.vim'))
+	colorscheme dracula
+endif
+
+"airline------------------------------
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 0
+let g:airline#extensions#whitespace#enabled = 0
+
+" Fancy Symbols!!
+let g:webdevicons_enable = 1
+
+" custom airline symbols
+if !exists('g:airline_symbols')
+   let g:airline_symbols = {}
+endif
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+ 
+let g:airline_symbols.branch = '⭠'
+let g:airline_symbols.readonly = '🔒'
+let g:airline_symbols.linenr = '☰ '
+let g:airline_symbols.maxlinenr = ' ¶'
+
+"NerdTree-----------------------------
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
+    \ quit | endif
+"autocmd VimEnter * NERDTree | wincmd p
+autocmd BufWinEnter * silent NERDTreeMirror
+let NERDTreeIgnore = ['\.pyc$', '__pycache__']
+
+"TagBar-------------------------------
+
+"ncm----------------------------------
+
+"Flake8-------------------------------
+let g:flake8_show_in_file=1
