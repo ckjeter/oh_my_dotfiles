@@ -1,5 +1,4 @@
 "General Setting------------------------------
-syntax on
 set encoding=utf-8
 set t_Co=256
 set background=dark
@@ -19,8 +18,8 @@ set completeopt-=preview
 set backspace=indent,eol,start
 
 "nmap---------------------------------
-"map <leader>t :TagbarToggle<CR>
-"map <leader>f :NERDTreeToggle<CR>
+map <leader>t :TagbarToggle<CR>
+map <leader>f :NERDTreeToggle<CR>
 nmap <C-P> :Files<CR>
 nmap <C-e> :Buffers<CR>
 let g:fzf_action = { 'ctrl-e': 'edit' }
@@ -35,7 +34,6 @@ else
 endif
 set nocompatible              " be iMproved, required
 filetype off                  " required
-set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#rc(s:editor_root . '/bundle')
 call vundle#begin()
 
@@ -44,6 +42,7 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'preservim/nerdtree'
 Plugin 'preservim/tagbar'
 Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plugin 'jiangmiao/auto-pairs'
 Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -52,12 +51,18 @@ Plugin 'ycm-core/YouCompleteMe'
 Plugin 'tpope/vim-fugitive'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'nvie/vim-flake8'
-Plugin 'dracula/vim', { 'as': 'dracula' }
 Plugin 'ryanoasis/vim-devicons'
 Plugin 'tell-k/vim-autopep8'
 Plugin 'morhetz/gruvbox'
 
 call vundle#end()
+
+"theme--------------------------------
+syntax on
+set bg=dark
+let g:gruvbox_contrast_dark = 'medium'
+
+colorscheme gruvbox
 
 "airline------------------------------
 let g:airline#extensions#tabline#enabled = 1
@@ -85,7 +90,7 @@ let g:airline_symbols.maxlinenr = ' ¶'
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
     \ quit | endif
 "autocmd VimEnter * NERDTree | wincmd p
-"autocmd BufWinEnter * silent NERDTreeMirror
+autocmd BufWinEnter * silent NERDTreeMirror
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 
 "TagBar-------------------------------
