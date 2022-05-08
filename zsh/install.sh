@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #zsh
-sudo apt install zsh
+sudo brew install zsh
 chsh -s /bin/zsh
 
 #oh-my-zsh
