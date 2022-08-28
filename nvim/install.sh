@@ -8,4 +8,4 @@ git clone https://github.com/VundleVim/Vundle.vim.git ~/.config/nvim/bundle/Vund
 pip install pynvim
 .~/.config/nvim/bundle/YouCompleteMe/install.py
 vim +PlugInstall
-
+echo 'alias vim="nvim"' > ~/.zshrc
