@@ -3,6 +3,7 @@ set encoding=utf-8
 set t_Co=256
 set background=dark
 set tabstop=4 softtabstop=4 shiftwidth=4
+set expandtab
 set guifont=Fira\ Code:h12
 set scrolloff=10
 set ai
@@ -25,37 +26,29 @@ nmap <C-e> :Buffers<CR>
 let g:fzf_action = { 'ctrl-e': 'edit' }
 
 "plugins------------------------------
-if has('nvim')
-    let s:editor_root=expand("~/.config/nvim")
-    set rtp+=~/.config/nvim/bundle/Vundle.vim
-else
-    let s:editor_root=expand("~/.vim")
-    set rtp+=~/.vim/bundle/Vundle.vim
-endif
-set nocompatible              " be iMproved, required
-filetype off                  " required
-call vundle#rc(s:editor_root . '/bundle')
-call vundle#begin()
+call plug#begin('~/.config/nvim/plugged')
 
-Plugin 'VundleVim/Vundle.vim'
+Plug 'VundleVim/Vundle.vim'
 
-Plugin 'preservim/nerdtree'
-Plugin 'preservim/tagbar'
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
-Plugin 'jiangmiao/auto-pairs'
-Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plugin 'junegunn/fzf.vim'
-Plugin 'ycm-core/YouCompleteMe'
-Plugin 'tpope/vim-fugitive'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'nvie/vim-flake8'
-Plugin 'ryanoasis/vim-devicons'
-Plugin 'tell-k/vim-autopep8'
-Plugin 'morhetz/gruvbox'
+Plug 'preservim/nerdtree'
+Plug 'preservim/tagbar'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plug 'jiangmiao/auto-pairs'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+Plug 'nvie/vim-flake8'
+Plug 'ryanoasis/vim-devicons'
+Plug 'morhetz/gruvbox'
+Plug 'pocke/sushibar.vim'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'dense-analysis/ale'
 
-call vundle#end()
+
+call plug#end()
 
 "theme--------------------------------
 syntax on
@@ -88,7 +81,7 @@ let g:airline_symbols.maxlinenr = ' ¶'
 
 "NerdTree-----------------------------
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
-    \ quit | endif
+   \ quit | endif
 "autocmd VimEnter * NERDTree | wincmd p
 autocmd BufWinEnter * silent NERDTreeMirror
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
@@ -99,3 +92,26 @@ let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 
 "Flake8-------------------------------
 let g:flake8_show_in_file=1
+
+"coc----------------------------------
+" Use <Tab> and <S-Tab> to navigate the completion list
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+"ALE----------------------------------
+" let b:ale_fixers = ['autopep8']
+let g:ale_linters = {
+\   'javascript': ['eslint'],
+\   'python': ['pylint', 'pyright']
+\}
+let g:syntastic_python_pylint_post_args="--max-line-length=79"
+let g:ale_set_highlights = 1
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-J> <Plug>(ale_next_wrap)
+
+let g:ale_fix_on_save = 1
+let g:ale_python_auto_pipenv = 1
+let g:ale_python_pylint_auto_pipenv = 1
+let g:ale_completion_enabled = 0
+set omnifunc=
+let g:omni_sql_no_default_maps = 1
