@@ -17,6 +17,8 @@ set clipboard=unnamed
 set autoread
 set completeopt-=preview
 set backspace=indent,eol,start
+let &t_SI = "\e[5 q"
+let &t_EI = "\e[2 q"
 
 "nmap---------------------------------
 map <leader>t :TagbarToggle<CR>
@@ -44,7 +46,6 @@ Plug 'nvie/vim-flake8'
 Plug 'ryanoasis/vim-devicons'
 Plug 'morhetz/gruvbox'
 Plug 'pocke/sushibar.vim'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'dense-analysis/ale'
 
 
@@ -97,6 +98,8 @@ let g:flake8_show_in_file=1
 " Use <Tab> and <S-Tab> to navigate the completion list
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <CR> pumvisible() ? "\<C-Y>" : "\<CR>"
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<C-y>"
 
 "ALE----------------------------------
 " let b:ale_fixers = ['autopep8']
