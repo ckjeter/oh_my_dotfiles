@@ -47,7 +47,7 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'morhetz/gruvbox'
 Plug 'pocke/sushibar.vim'
 Plug 'dense-analysis/ale'
-
+Plug 'MattesGroeger/vim-bookmarks'
 
 call plug#end()
 
@@ -96,11 +96,8 @@ let g:flake8_show_in_file=1
 
 "coc----------------------------------
 " Use <Tab> and <S-Tab> to navigate the completion list
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-inoremap <expr> <CR> pumvisible() ? "\<C-Y>" : "\<CR>"
-inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<C-y>"
-
+inoremap <expr> <Tab> coc#pum#visible() ? coc#pum#next(1) : "\<Tab>"
+inoremap <expr> <S-Tab> coc#pum#visible() ? coc#pum#prev(1) : "\<S-Tab>"
 "ALE----------------------------------
 " let b:ale_fixers = ['autopep8']
 let g:ale_linters = {
@@ -118,3 +115,8 @@ let g:ale_python_pylint_auto_pipenv = 1
 let g:ale_completion_enabled = 0
 set omnifunc=
 let g:omni_sql_no_default_maps = 1
+
+"vim-bookmark-------------------------
+highlight BookmarkSign ctermbg=237 ctermfg=130
+let g:bookmark_save_per_working_dir = 1
+let g:bookmark_auto_save = 1
