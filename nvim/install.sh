@@ -6,4 +6,4 @@ ln -s ~/.vimrc ~/.config/nvim/init.vim
 #Vundle setup
 git clone https://github.com/VundleVim/Vundle.vim.git ~/.config/nvim/bundle/Vundle.vim
 # pip install pynvim
-vim +PlugInstall
+nvim +PlugInstall
