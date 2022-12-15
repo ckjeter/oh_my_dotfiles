@@ -19,6 +19,10 @@ set completeopt-=preview
 set backspace=indent,eol,start
 let &t_SI = "\e[5 q"
 let &t_EI = "\e[2 q"
+nnoremap d "_d
+vnoremap d "_d
+nnoremap x "_x
+vnoremap x "_x
 
 "nmap---------------------------------
 map <leader>t :TagbarToggle<CR>
@@ -47,6 +51,9 @@ Plug 'pocke/sushibar.vim'
 Plug 'dense-analysis/ale'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'chrisbra/csv.vim'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-repeat'
 
 call plug#end()
 
@@ -121,3 +128,11 @@ let g:omni_sql_no_default_maps = 1
 highlight BookmarkSign ctermbg=237 ctermfg=130
 let g:bookmark_save_per_working_dir = 1
 let g:bookmark_auto_save = 1
+
+"csv.vim------------------------------
+let g:csv_highlight_column = 'y'
+let g:csv_arrange_align='l*'
+hi CSVColumnEven ctermfg=Brown
+hi CSVColumnOdd ctermfg=178
+hi CSVColumnHeaderEven cterm=bold ctermfg=Brown
+hi CSVColumnHeaderOdd cterm=bold ctermfg=178
