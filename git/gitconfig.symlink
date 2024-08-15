@@ -1,0 +1,36 @@
+[user]
+	name = Kuan Wu
+	email = ckjeter7@gmail.com
+[github]
+	user = ckjeter
+[alias]
+	br = branch
+	p = add -p
+	co = checkout
+	ci = commit
+	coi = !git for-each-ref --sort=-committerdate --format='%(refname:short) (%(committerdate:relative))' refs/heads | fzf --reverse --nth=1 --preview 'git log --patch --color {1}...{1}~5' | awk '{print $1}' | xargs git checkout
+	st = status
+	staged = diff --staged
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+	ui = auto
+[core]
+	excludesfile = ~/.gitignore
+	editor = nvim
+[difftool]
+	prompt = false
+[mergetool]
+	prompt = false
+[push]
+	default = upstream
+[commit]
+	gpgsign = false
+[hub]
+	protocol = https
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

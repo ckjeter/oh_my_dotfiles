@@ -3,6 +3,7 @@ set encoding=utf-8
 set t_Co=256
 set background=dark
 set tabstop=4 softtabstop=4 shiftwidth=4
+autocmd FileType typescript,javascript,typescriptreact,javascriptreact setlocal shiftwidth=4 tabstop=4 expandtab
 set expandtab
 set guifont=Fira\ Code:h12
 set scrolloff=10
@@ -21,15 +22,14 @@ let &t_SI = "\e[5 q"
 let &t_EI = "\e[2 q"
 nnoremap d "_d
 vnoremap d "_d
-nnoremap x "_x
-vnoremap x "_x
 
 "nmap---------------------------------
 map <leader>t :TagbarToggle<CR>
-map <leader>f :NERDTreeToggle<CR>
+map <leader>f :silent! NERDTreeToggle<CR>
 nmap <C-P> :Files<CR>
 nmap <C-e> :Buffers<CR>
 let g:fzf_action = { 'ctrl-e': 'edit' }
+nnoremap <silent> <Leader>p :Rg<CR>
 
 "plugins------------------------------
 call plug#begin('~/.config/nvim/plugged')
@@ -48,17 +48,27 @@ Plug 'nvie/vim-flake8'
 Plug 'ryanoasis/vim-devicons'
 Plug 'morhetz/gruvbox'
 Plug 'pocke/sushibar.vim'
-Plug 'dense-analysis/ale'
+" Plug 'dense-analysis/ale'
+Plug 'APZelos/blamer.nvim'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'chrisbra/csv.vim'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
+Plug 'yuezk/vim-js'
+Plug 'maxmellon/vim-jsx-pretty'
+Plug 'prettier/vim-prettier', { 'do': 'pnpm install -g' }
+Plug 'github/copilot.vim'
+Plug 'voldikss/vim-floaterm'
+Plug 'iberianpig/tig-explorer.vim'
+Plug 'rbgrouleff/bclose.vim'
+Plug 'brooth/far.vim'
 
 call plug#end()
 
 "theme--------------------------------
-syntax on
+filetype plugin on
+syntax enable
 set bg=dark
 let g:gruvbox_contrast_dark = 'medium'
 
@@ -92,11 +102,22 @@ autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTr
 "autocmd VimEnter * NERDTree | wincmd p
 autocmd BufWinEnter * silent NERDTreeMirror
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
+let NERDTreeShowHidden=1
+let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+let g:WebDevIconsUnicodeDecorateFileNodes = 1
+let g:DevIconsEnableFolderExtensionPatternMatching = 1
+let g:WebDevIconsNerdTreePlugin = 1
+let g:NERDTreeHighlightFolders = 1
+let g:NERDTreeShowLineNumbers = 1
+let g:NERDTreeQuitOnOpen = 0
 
 "TagBar-------------------------------
 nmap <Bslash><T> :TagbarToggle<CR>
+let g:tagbar_ctags_bin = '/opt/homebrew/bin/ctags'
+let g:tagbar_mem_limit = 134217728
 
-"ncm----------------------------------
+"fzf----------------------------------
+let g:fzf_default_command = 'Hidden Files'
 
 "Flake8-------------------------------
 let g:flake8_show_in_file=1
@@ -108,21 +129,23 @@ inoremap <expr> <S-Tab> coc#pum#visible() ? coc#pum#prev(1) : '<S-Tab>'
 
 "ALE----------------------------------
 " let b:ale_fixers = ['autopep8']
-let g:ale_linters = {
-\   'javascript': ['eslint'],
-\   'python': ['pylint', 'pyright']
-\}
-let g:syntastic_python_pylint_post_args="--max-line-length=79"
-let g:ale_set_highlights = 1
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-J> <Plug>(ale_next_wrap)
-
-let g:ale_fix_on_save = 1
-let g:ale_python_auto_pipenv = 1
-let g:ale_python_pylint_auto_pipenv = 1
-let g:ale_completion_enabled = 0
-set omnifunc=
-let g:omni_sql_no_default_maps = 1
+" let g:ale_linters = {
+" \   'python': ['pylint', 'pyright']
+" \}
+" " \   'javascript': ['eslint'],
+" let g:syntastic_python_pylint_post_args="--max-line-length=79"
+" let g:ale_set_highlights = 1
+" let g:ale_sign_error = '✕'
+" let g:ale_sign_warning = '⚠︎'
+" nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+" nmap <silent> <C-J> <Plug>(ale_next_wrap)
+" 
+" let g:ale_fix_on_save = 1
+" let g:ale_python_auto_pipenv = 1
+" let g:ale_python_pylint_auto_pipenv = 1
+" let g:ale_completion_enabled = 0
+" set omnifunc=
+" let g:omni_sql_no_default_maps = 1
 
 "vim-bookmark-------------------------
 highlight BookmarkSign ctermbg=237 ctermfg=130
@@ -136,3 +159,27 @@ hi CSVColumnEven ctermfg=Brown
 hi CSVColumnOdd ctermfg=178
 hi CSVColumnHeaderEven cterm=bold ctermfg=Brown
 hi CSVColumnHeaderOdd cterm=bold ctermfg=178
+
+"jsx_pretty
+let g:vim_jsx_pretty_colorful_config = 1
+
+"prettier
+let g:prettier#autoformat_require_pragma = 0
+let g:prettier#exec_cmd_async = 1
+let g:prettier#config#prettier_exec_cmd = '!prettier'
+let g:prettier#config#prettier_config_file = '.prettierrc.yaml'
+let g:prettier#autoformat = 0
+
+"copilot
+
+"vim-floaterm
+" nnoremap <C-]> :FloatermNew --autoclose=2000 ctags -R .<CR>
+" autocmd FileType floaterm nnoremap <buffer> <silent> <CR> :FloatermSend ctags<CR>
+"
+
+"gitlens-----------------------------
+let g:blamer_enabled = 1
+let g:blamer_show_in_visual_modes = 0
+let g:blamer_show_in_insert_modes = 0
+
+let g:tig_explorer_keymap_commit_split = '<C-s>'
