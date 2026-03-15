@@ -44,4 +44,6 @@ setup_gitconfig () {
 setup_gitconfig
 ln -s -b ~/.dotfiles/git/gitconfig.symlink ~/.gitconfig
 ln -s -b ~/.dotfiles/git/gitignore.symlink ~/.gitignore
-echo "export GPG_TTY=$(tty)" >> ~/.zshrc
+if tty > /dev/null 2>&1; then
+  echo "export GPG_TTY=$(tty)" >> ~/.zshrc
+fi

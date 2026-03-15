@@ -1,0 +1,32 @@
+name: Test
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Shell syntax check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check all install.sh syntax
+        run: find . -name "install.sh" | xargs -I{} bash -n {}
+
+  install:
+    name: Install and verify symlinks
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Link repo to ~/.dotfiles
+        run: ln -sf $GITHUB_WORKSPACE ~/.dotfiles
+
+      - name: Run nvim install
+        run: sh ~/.dotfiles/nvim/install.sh
+
+      - name: Verify nvim symlinks
+        run: |
+          test -L ~/.vimrc || (echo "~/.vimrc symlink missing" && exit 1)
+          test -L ~/.config/nvim/init.vim || (echo "~/.config/nvim/init.vim symlink missing" && exit 1)
