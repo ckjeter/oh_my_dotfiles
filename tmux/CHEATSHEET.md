@@ -53,8 +53,8 @@ Unified navigation — works across both tmux panes and Neovim splits without pr
 | `prefix + -` | Split horizontal (pain-control) |
 | `prefix + h/j/k/l` | Navigate panes (pain-control) |
 | `prefix + H/J/K/L` | Resize panes (pain-control) |
-| `C-z` | Zoom / unzoom current pane |
-| `C-Z` | Reset to even layout |
+| `prefix + z` | Zoom / unzoom current pane |
+| `prefix + Z` | Reset all panes to tiled (even) layout |
 | `prefix + x` | Kill pane |
 | `prefix + q` | Show pane numbers |
 
