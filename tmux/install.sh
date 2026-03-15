@@ -1,3 +1,6 @@
 #!/bin/sh
-ln -s  ~/.dotfiles/tmux/tmux.symlink ~/.tmux.conf
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+ln -sf ~/.dotfiles/tmux/tmux.symlink ~/.tmux.conf
+
+if [ ! -d ~/.tmux/plugins/tpm ]; then
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+fi
