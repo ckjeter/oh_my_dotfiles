@@ -61,6 +61,9 @@
 - [ ] Update toolchain (Starship, Ghostty, Cursor)
 - [ ] Point to root `install.sh`
 
+## Future Enhancements
+- [ ] tmux: add `tmux-thumbs` for hint-based text selection (URLs, file paths, git hashes) — faster alternative to copy mode
+
 ## Out of Scope
 - No nvim → Lua migration (Cursor is primary editor)
 - No .zshrc tracking in dotfiles (contains API keys)

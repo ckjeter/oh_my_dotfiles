@@ -4,6 +4,19 @@ Personal reference for quick terminal edits. Leader key: `\` (backslash).
 
 ---
 
+## Pane / Window Navigation (vim-tmux-navigator)
+
+Unified navigation across Neovim splits and tmux panes — no prefix needed:
+
+| Key | Action |
+|-----|--------|
+| `C-h` | Move left |
+| `C-j` | Move down |
+| `C-k` | Move up |
+| `C-l` | Move right |
+
+---
+
 ## File Navigation
 
 | Key | Action |
