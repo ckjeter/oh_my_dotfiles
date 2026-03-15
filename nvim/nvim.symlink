@@ -51,6 +51,7 @@ Plug 'tpope/vim-repeat'
 Plug 'yuezk/vim-js'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'github/copilot.vim'
+Plug 'christoomey/vim-tmux-navigator'
 Plug 'sindrets/diffview.nvim'
 Plug 'preservim/vim-markdown'
 

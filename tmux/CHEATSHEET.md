@@ -32,6 +32,19 @@ Prefix key: `C-a` (Ctrl + a)
 
 ---
 
+## Pane / Neovim Navigation (vim-tmux-navigator)
+
+Unified navigation — works across both tmux panes and Neovim splits without prefix:
+
+| Key | Action |
+|-----|--------|
+| `C-h` | Move left |
+| `C-j` | Move down |
+| `C-k` | Move up |
+| `C-l` | Move right |
+
+---
+
 ## Panes
 
 | Key | Action |
@@ -57,6 +70,17 @@ Prefix key: `C-a` (Ctrl + a)
 | `q` | Exit copy mode |
 | `o` | Open selected text in default app (tmux-open) |
 | `Ctrl-o` | Open selected text in `$EDITOR` (tmux-open) |
+
+---
+
+## Notifications (tmux-notify)
+
+| Key | Action |
+|-----|--------|
+| `prefix + m` | Monitor current pane — notifies when command finishes |
+| `prefix + M` | Cancel monitoring |
+
+> Useful for long-running commands (builds, tests). Switch away and get a macOS notification when done.
 
 ---
 
