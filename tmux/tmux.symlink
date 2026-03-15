@@ -33,6 +33,10 @@ set -g @plugin 'tmux-plugins/tmux-cpu'
 set -g @plugin 'tmux-plugins/tmux-sessionist'
 set -g @plugin 'tmux-plugins/tmux-open'
 set -g @plugin 'tmux-plugins/tmux-resurrect'
+set -g @plugin 'tmux-plugins/tmux-continuum'
+
+set -g @continuum-restore 'on'
+set -g @continuum-save-interval '15'
 
 #Status Bar
 ## COLORSCHEME: gruvbox dark (medium)
