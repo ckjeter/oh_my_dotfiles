@@ -57,6 +57,42 @@ Format: `<type>(<scope>): <summary>`
 - No root `install.sh` yet — see PLAN.md
 - nvim plugins not yet cleaned up on host machine — run `:PlugClean` then `:PlugInstall`
 
+## Testing Strategy
+
+Changes are validated via GitHub Actions on every PR (free for public repos).
+
+### What is tested
+
+| Job | Runner | Checks |
+|-----|--------|--------|
+| `lint` | `ubuntu-latest` | Shell syntax errors in all `install.sh` files |
+| `install` | `macos-latest` | Install scripts run without error + symlinks are created |
+
+### What is NOT tested (by design)
+
+- Neovim plugin rendering — requires a display
+- Homebrew package installs — too slow and environment-dependent
+- Shell behavior (zsh config, aliases) — depends on existing system state
+
+### Running tests locally before pushing
+
+```bash
+# Syntax check all install scripts
+find . -name "install.sh" | xargs -I{} bash -n {}
+```
+
+### Adding tests for a new tool
+
+When adding a new `<tool>/install.sh`, add a corresponding verify step in `.github/workflows/test.yml`:
+
+```yaml
+- name: Run <tool> install
+  run: sh .dotfiles/<tool>/install.sh
+
+- name: Verify <tool> symlinks
+  run: test -L ~/<expected-symlink> || (echo "symlink missing" && exit 1)
+```
+
 ## Symlink Audit
 ```bash
 ls -la ~ | grep dotfiles
