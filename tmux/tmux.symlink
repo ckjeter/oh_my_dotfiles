@@ -1,5 +1,6 @@
 # for Mac zsh
-set -g default-terminal "screen-256color"
+set -g default-terminal "tmux-256color"
+set -ag terminal-overrides ",xterm-256color:RGB"
 # remap prefix from 'C-b' to 'C-a'
 unbind C-b
 set-option -g prefix C-a
@@ -8,6 +9,7 @@ bind-key -T copy-mode-vi v send-keys -X begin-selection
 bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
 bind-key -n C-z resize-pane -Z
 bind-key -n C-Z select-layout -t 0
+set -s escape-time 0
 
 set -g default-shell /bin/zsh
 setw -g mode-keys vi
@@ -77,7 +79,6 @@ set-option -g status-right-length "80"
 set-window-option -g window-status-separator ""
 
 set-option -g status-left "#{prefix_highlight}#[bg=colour241,fg=colour248] #S #[bg=colour237,fg=colour241,nobold,noitalics,nounderscore]"
-#set-option -g status-right "#[bg=colour237,fg=colour239 nobold, nounderscore, noitalics]#[bg=colour239,fg=colour246] VRAM #{gram_percentage}  #[nobold, nounderscore, noitalics]CPU #{cpu_percentage} #[bg=colour239, fg=colour248 nobold, nounderscore, noitalics]#[bg=colour248,fg=colour237] #h"
 set-option -g status-right "#[bg=colour237,fg=colour239 nobold, nounderscore, noitalics]#[bg=colour239,fg=colour246] #[nobold, nounderscore, noitalics]CPU #{cpu_percentage} #[bg=colour239, fg=colour248 nobold, nounderscore, noitalics]#[bg=colour248,fg=colour237] #h "
 
 set-window-option -g window-status-current-format "#[bg=colour214,fg=colour237,nobold,noitalics,nounderscore]#[bg=colour214,fg=colour239] #I #[bg=colour214,fg=colour239,bold] #W #[bg=colour237,fg=colour214,nobold,noitalics,nounderscore]"
