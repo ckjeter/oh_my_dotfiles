@@ -1,0 +1,15 @@
+# <type>(<scope>): <short summary>
+# type:  feat | fix | chore | refactor | docs
+# scope: nvim | tmux | zsh | git | ghostty | starship | scripts
+# summary: imperative, lowercase, no period, max 72 chars
+#
+# Examples:
+#   feat(nvim): add diffview for claude code diff review
+#   fix(git): correct gitignore symlink path
+#   chore(tmux): update gruvbox theme version
+#   refactor(nvim): remove deprecated plugins
+#
+# Body (optional) — explain WHY, not what:
+#
+#
+# ------- DO NOT EDIT BELOW -------
