@@ -26,15 +26,7 @@ jobs:
       - name: Run nvim install
         run: sh ~/.dotfiles/nvim/install.sh
 
-      - name: Run git install
-        run: sh ~/.dotfiles/git/install.sh
-
       - name: Verify nvim symlinks
         run: |
           test -L ~/.vimrc || (echo "~/.vimrc symlink missing" && exit 1)
           test -L ~/.config/nvim/init.vim || (echo "~/.config/nvim/init.vim symlink missing" && exit 1)
-
-      - name: Verify git symlinks
-        run: |
-          test -L ~/.gitconfig || (echo "~/.gitconfig symlink missing" && exit 1)
-          test -L ~/.gitignore || (echo "~/.gitignore symlink missing" && exit 1)

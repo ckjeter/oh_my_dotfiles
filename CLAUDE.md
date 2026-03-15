@@ -27,7 +27,7 @@ Personal portable dev environment. Managed as a side project.
 | zsh/ | oh-my-zsh setup + plugins |
 | tmux/ | tmux.conf + tpm |
 | nvim/ | vimrc (minimal, quick edits) |
-| git/ | gitconfig + gitignore |
+| git/ | gitconfig only (gitignore is project-specific, not tracked) |
 | starship/ | starship.toml |
 | ghostty/ | ghostty terminal config |
 | scripts/ | tmux session ordering |
@@ -72,6 +72,7 @@ Changes are validated via GitHub Actions on every PR (free for public repos).
 
 - Neovim plugin rendering — requires a display
 - Neovim `:PlugInstall` — skipped on CI if nvim not installed; install scripts guard with `command -v nvim`
+- Git config — `git/install.sh` has interactive prompts (author name/email); not CI-testable
 - Homebrew package installs — too slow and environment-dependent
 - Shell behavior (zsh config, aliases) — depends on existing system state
 
