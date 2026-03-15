@@ -19,14 +19,15 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: .dotfiles
+
+      - name: Link repo to ~/.dotfiles
+        run: ln -sf $GITHUB_WORKSPACE ~/.dotfiles
 
       - name: Run nvim install
-        run: sh .dotfiles/nvim/install.sh
+        run: sh ~/.dotfiles/nvim/install.sh
 
       - name: Run git install
-        run: sh .dotfiles/git/install.sh
+        run: sh ~/.dotfiles/git/install.sh
 
       - name: Verify nvim symlinks
         run: |
