@@ -53,7 +53,6 @@ Format: `<type>(<scope>): <summary>`
 - Template auto-loads via `git/gitmessage` — runs on every `git commit`
 
 ## Known Issues
-- `.gitignore` symlink was created with wrong username path — re-run `git/install.sh` to fix
 - No root `install.sh` yet — see PLAN.md
 - nvim plugins not yet cleaned up on host machine — run `:PlugClean` then `:PlugInstall`
 
