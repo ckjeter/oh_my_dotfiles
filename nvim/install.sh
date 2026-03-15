@@ -9,5 +9,9 @@ ln -sf ~/.vimrc ~/.config/nvim/init.vim
 curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-# pip install pynvim
-nvim +PlugInstall +qall
+# install plugins (skipped if nvim is not available, e.g. CI)
+if command -v nvim > /dev/null 2>&1; then
+  nvim +PlugInstall +qall
+else
+  echo "nvim not found — skipping plugin install. Run ':PlugInstall' manually after installing nvim."
+fi

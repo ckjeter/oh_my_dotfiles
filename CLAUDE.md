@@ -71,6 +71,7 @@ Changes are validated via GitHub Actions on every PR (free for public repos).
 ### What is NOT tested (by design)
 
 - Neovim plugin rendering — requires a display
+- Neovim `:PlugInstall` — skipped on CI if nvim not installed; install scripts guard with `command -v nvim`
 - Homebrew package installs — too slow and environment-dependent
 - Shell behavior (zsh config, aliases) — depends on existing system state
 
