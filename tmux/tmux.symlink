@@ -52,11 +52,17 @@ set -g @catppuccin_date_time_text ' %a %H:%M'
 
 run '~/.tmux/plugins/tpm/tpm'
 
+# tmux-battery uses one-time string replacement in status-right at load time,
+# which is incompatible with catppuccin v2's deferred option expansion.
+# Override with direct script paths so they resolve at render time.
+set -g @catppuccin_battery_icon "#(~/.tmux/plugins/tmux-battery/scripts/battery_icon.sh) "
+set -g @catppuccin_battery_text " #(~/.tmux/plugins/tmux-battery/scripts/battery_percentage.sh)"
+
 # Status bar layout (v2 API — must come after plugin load)
 set -g status-left-length 100
 set -g status-right-length 100
-set -g status-left ""
-set -g status-left "#{E:@catppuccin_status_session} "
-set -g status-right "#{E:@catppuccin_status_battery}"
-set -ag status-right "#{E:@catppuccin_status_application}"
+set -g status-left "#{E:@catppuccin_status_session} #[bg=default]"
+set -ag status-left " "
+set -g status-right "#{E:@catppuccin_status_application} "
+set -ag status-right "#{E:@catppuccin_status_battery} "
 set -ag status-right "#{E:@catppuccin_status_date_time}"
