@@ -34,15 +34,13 @@ nnoremap <silent> <Leader>p :Rg<CR>
 call plug#begin('~/.config/nvim/plugged')
 
 Plug 'preservim/nerdtree'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'ryanoasis/vim-devicons'
-Plug 'morhetz/gruvbox'
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'APZelos/blamer.nvim'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -55,6 +53,8 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'sindrets/diffview.nvim'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'MeanderingProgrammer/render-markdown.nvim'
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'akinsho/bufferline.nvim'
 
 call plug#end()
 
@@ -62,31 +62,40 @@ call plug#end()
 filetype plugin on
 syntax enable
 set bg=dark
-let g:gruvbox_contrast_dark = 'medium'
+set termguicolors
 
-colorscheme gruvbox
+lua << EOF
+local ok, catppuccin = pcall(require, 'catppuccin')
+if ok then
+  catppuccin.setup({
+    flavour = 'mocha',
+    integrations = {
+      coc_nvim = true,
+      gitgutter = true,
+      nerdtree = true,
+      lualine = true,
+      bufferline = true,
+    },
+  })
+  vim.cmd('colorscheme catppuccin')
+end
 
-"airline------------------------------
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 0
-let g:airline#extensions#whitespace#enabled = 0
+local ok_ll, lualine = pcall(require, 'lualine')
+if ok_ll then
+  lualine.setup({ options = { theme = 'catppuccin-mocha' } })
+end
+
+local ok_bl, bufferline = pcall(require, 'bufferline')
+if ok_bl then
+  local bl_opts = { options = { separator_style = 'slant' } }
+  local ok_hl, hl = pcall(require, 'catppuccin.groups.integrations.bufferline')
+  if ok_hl then bl_opts.highlights = hl.get() end
+  bufferline.setup(bl_opts)
+end
+EOF
 
 " Fancy Symbols!!
 let g:webdevicons_enable = 1
-
-" custom airline symbols
-if !exists('g:airline_symbols')
-   let g:airline_symbols = {}
-endif
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
-
-let g:airline_symbols.branch = '⭠'
-let g:airline_symbols.readonly = '🔒'
-let g:airline_symbols.linenr = '☰ '
-let g:airline_symbols.maxlinenr = ' ¶'
 
 "NerdTree-----------------------------
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
@@ -111,7 +120,6 @@ set completeopt=menuone,noinsert,noselect
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
 "vim-bookmark-------------------------
-highlight BookmarkSign ctermbg=237 ctermfg=130
 let g:bookmark_save_per_working_dir = 1
 let g:bookmark_auto_save = 1
 
@@ -140,7 +148,12 @@ local ok_ts, ts = pcall(require, 'nvim-treesitter.configs')
 if ok_ts then
   ts.setup({
     ensure_installed = { 'markdown', 'markdown_inline' },
-    highlight = { enable = true },
+    highlight = {
+      enable = true,
+      disable = function(lang)
+        return lang ~= 'markdown' and lang ~= 'markdown_inline'
+      end,
+    },
   })
 end
 
