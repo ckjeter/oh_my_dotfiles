@@ -13,7 +13,7 @@ If these configs look bad, I'm just not nerdy enough yet.
 | zsh | `zsh/` | oh-my-zsh + zsh-autosuggestions + zsh-syntax-highlighting |
 | Starship | `starship/` | Shell prompt (bracketed segments preset) |
 | tmux | `tmux/` | Gruvbox theme, C-a prefix, tpm plugins |
-| Neovim | `nvim/` | Minimal config for quick terminal edits (Cursor is primary) |
+| Neovim | `nvim/` | Minimal config for quick terminal edits |
 | Git | `git/` | gitconfig + commit message template |
 
 ---
