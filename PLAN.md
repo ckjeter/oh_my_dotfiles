@@ -48,6 +48,16 @@
 - [ ] Update toolchain (Starship, Ghostty, Cursor)
 - [ ] Point to root `install.sh`
 
+## 3. Refactor zsh setup (undecided)
+Current state: `.zshrc` is untracked (contains API keys + tool inits dumped over time).
+Proposed approach:
+- `zsh/zshrc.symlink` — minimal base (oh-my-zsh, plugins, aliases only)
+- Each tool's `install.sh` injects its own init line (nvm, pyenv, jenv, etc.)
+- `~/.zshrc.local` — untracked, for API keys + third-party injected blocks (conda, etc.)
+- `zsh/install.sh` — install oh-my-zsh + plugins, then symlink zshrc, create empty zshrc.local
+
+Not started. Needs careful audit of current `~/.zshrc` before implementing.
+
 ## Future Enhancements
 - [ ] tmux: add `tmux-thumbs` for hint-based text selection (URLs, file paths, git hashes) — faster alternative to copy mode
 
