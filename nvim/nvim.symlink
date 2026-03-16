@@ -34,8 +34,6 @@ nnoremap <silent> <Leader>p :Rg<CR>
 call plug#begin('~/.config/nvim/plugged')
 
 Plug 'preservim/nerdtree'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
@@ -79,28 +77,8 @@ if ok then
 end
 EOF
 
-"airline------------------------------
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 0
-let g:airline#extensions#whitespace#enabled = 0
-let g:airline_theme = 'catppuccin'
-
 " Fancy Symbols!!
 let g:webdevicons_enable = 1
-
-" custom airline symbols
-if !exists('g:airline_symbols')
-   let g:airline_symbols = {}
-endif
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
-
-let g:airline_symbols.branch = '⭠'
-let g:airline_symbols.readonly = '🔒'
-let g:airline_symbols.linenr = '☰ '
-let g:airline_symbols.maxlinenr = ' ¶'
 
 "NerdTree-----------------------------
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
