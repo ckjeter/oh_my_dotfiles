@@ -67,7 +67,14 @@ set termguicolors
 lua << EOF
 local ok, catppuccin = pcall(require, 'catppuccin')
 if ok then
-  catppuccin.setup({ flavour = 'mocha' })
+  catppuccin.setup({
+    flavour = 'mocha',
+    integrations = {
+      coc_nvim = true,
+      gitgutter = true,
+      nerdtree = true,
+    },
+  })
   vim.cmd('colorscheme catppuccin')
 end
 EOF
