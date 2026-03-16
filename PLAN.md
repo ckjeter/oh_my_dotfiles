@@ -1,15 +1,9 @@
 # Dotfiles Modernization Plan
 
 ## 1. Add Starship Config
-- [ ] Create `starship/` folder
-- [ ] Copy `~/.config/starship.toml` → `starship/starship.toml.symlink`
-- [ ] Create `starship/install.sh`:
-  ```sh
-  #!/bin/sh
-  brew install starship
-  mkdir -p ~/.config
-  ln -sf ~/.dotfiles/starship/starship.toml.symlink ~/.config/starship.toml
-  ```
+- [x] Create `starship/` folder
+- [x] Copy `~/.config/starship.toml` → `starship/starship.toml.symlink`
+- [x] Create `starship/install.sh`
 
 ## 2. Add Ghostty Config
 - [ ] Create `ghostty/` folder
@@ -48,13 +42,6 @@
   sh ghostty/install.sh
   ```
 - [ ] Add guard: check if symlink already exists before creating (avoid re-run errors)
-
-## 6. Fix gitignore Symlink Username
-- [ ] Re-run `git/install.sh` or manually fix:
-  ```sh
-  rm ~/.gitignore
-  ln -s ~/.dotfiles/git/gitignore.symlink ~/.gitignore
-  ```
 
 ## 7. Update README.md
 - [ ] Fix typo ("reporesents")
