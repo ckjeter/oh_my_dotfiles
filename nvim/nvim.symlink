@@ -53,7 +53,8 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'github/copilot.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'sindrets/diffview.nvim'
-Plug 'preservim/vim-markdown'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'MeanderingProgrammer/render-markdown.nvim'
 
 call plug#end()
 
@@ -132,13 +133,16 @@ let g:blamer_show_in_insert_modes = 0
 
 "markdown--------------------------------
 autocmd FileType markdown setlocal wrap linebreak nolist
-autocmd FileType markdown setlocal conceallevel=2
 autocmd FileType markdown setlocal spell spelllang=en_us
-autocmd FileType markdown setlocal foldmethod=expr foldexpr=MarkdownFold()
-let g:vim_markdown_conceal = 1
-let g:vim_markdown_folding_level = 2
-let g:vim_markdown_new_folding_disabled = 0
-let g:vim_markdown_no_default_key_mappings = 1
+
+lua << EOF
+require('nvim-treesitter.configs').setup({
+  ensure_installed = { 'markdown', 'markdown_inline' },
+  highlight = { enable = true },
+})
+
+require('render-markdown').setup({})
+EOF
 
 "diffview--------------------------------
 lua require('diffview').setup({})
