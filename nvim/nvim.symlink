@@ -42,7 +42,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'ryanoasis/vim-devicons'
-Plug 'morhetz/gruvbox'
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'APZelos/blamer.nvim'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -62,11 +62,17 @@ call plug#end()
 filetype plugin on
 syntax enable
 set bg=dark
-let g:gruvbox_contrast_dark = 'medium'
 
-colorscheme gruvbox
+lua << EOF
+local ok, catppuccin = pcall(require, 'catppuccin')
+if ok then
+  catppuccin.setup({ flavour = 'mocha' })
+  vim.cmd('colorscheme catppuccin')
+end
+EOF
 
 "airline------------------------------
+let g:airline_theme = 'catppuccin'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 0
 let g:airline#extensions#whitespace#enabled = 0
@@ -111,7 +117,6 @@ set completeopt=menuone,noinsert,noselect
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
 "vim-bookmark-------------------------
-highlight BookmarkSign ctermbg=237 ctermfg=130
 let g:bookmark_save_per_working_dir = 1
 let g:bookmark_auto_save = 1
 
