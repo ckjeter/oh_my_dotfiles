@@ -66,3 +66,8 @@ set -ag status-left " "
 set -g status-right "#{E:@catppuccin_status_application} "
 set -ag status-right "#{E:@catppuccin_status_battery} "
 set -ag status-right "#{E:@catppuccin_status_date_time}"
+
+# Pane border colors (Catppuccin Mocha)
+set -g pane-border-lines heavy
+set -g pane-border-style 'fg=#45475a'
+set -g pane-active-border-style 'fg=#cba6f7'
