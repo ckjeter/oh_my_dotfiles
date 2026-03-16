@@ -30,3 +30,12 @@ jobs:
         run: |
           test -L ~/.vimrc || (echo "~/.vimrc symlink missing" && exit 1)
           test -L ~/.config/nvim/init.vim || (echo "~/.config/nvim/init.vim symlink missing" && exit 1)
+
+      - name: Run ghostty install
+        run: sh ~/.dotfiles/ghostty/install.sh
+
+      - name: Verify ghostty symlinks
+        run: |
+          test -L ~/.config/ghostty/config || (echo "~/.config/ghostty/config symlink missing" && exit 1)
+          test -L ~/.config/ghostty/themes/catppuccin-mocha.conf || (echo "ghostty mocha theme symlink missing" && exit 1)
+          test -L ~/.config/ghostty/themes/catppuccin-macchiato.conf || (echo "ghostty macchiato theme symlink missing" && exit 1)
