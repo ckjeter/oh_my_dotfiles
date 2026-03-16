@@ -53,6 +53,8 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'sindrets/diffview.nvim'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'MeanderingProgrammer/render-markdown.nvim'
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'akinsho/bufferline.nvim'
 
 call plug#end()
 
@@ -71,9 +73,24 @@ if ok then
       coc_nvim = true,
       gitgutter = true,
       nerdtree = true,
+      lualine = true,
+      bufferline = true,
     },
   })
   vim.cmd('colorscheme catppuccin')
+end
+
+local ok_ll, lualine = pcall(require, 'lualine')
+if ok_ll then
+  lualine.setup({ options = { theme = 'catppuccin' } })
+end
+
+local ok_bl, bufferline = pcall(require, 'bufferline')
+if ok_bl then
+  bufferline.setup({
+    highlights = require('catppuccin.groups.integrations.bufferline').get(),
+    options = { separator_style = 'slant' },
+  })
 end
 EOF
 
