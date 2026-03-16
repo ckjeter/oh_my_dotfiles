@@ -145,7 +145,12 @@ local ok_ts, ts = pcall(require, 'nvim-treesitter.configs')
 if ok_ts then
   ts.setup({
     ensure_installed = { 'markdown', 'markdown_inline' },
-    highlight = { enable = true },
+    highlight = {
+      enable = true,
+      disable = function(lang)
+        return lang ~= 'markdown' and lang ~= 'markdown_inline'
+      end,
+    },
   })
 end
 

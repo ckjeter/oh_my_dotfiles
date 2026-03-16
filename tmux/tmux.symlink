@@ -53,4 +53,4 @@ set -g @catppuccin_date_time_text '%H:%M'
 run '~/.tmux/plugins/tpm/tpm'
 
 # override status background after plugins load
-set -g status-style "bg=#333333"
+# set -g status-style "bg=#333333"
