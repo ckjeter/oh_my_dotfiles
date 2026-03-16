@@ -82,7 +82,7 @@ end
 
 local ok_ll, lualine = pcall(require, 'lualine')
 if ok_ll then
-  lualine.setup({ options = { theme = 'catppuccin-mocha' } })
+  lualine.setup({})
 end
 
 local ok_bl, bufferline = pcall(require, 'bufferline')
