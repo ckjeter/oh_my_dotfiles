@@ -136,12 +136,18 @@ autocmd FileType markdown setlocal wrap linebreak nolist
 autocmd FileType markdown setlocal spell spelllang=en_us
 
 lua << EOF
-require('nvim-treesitter.configs').setup({
-  ensure_installed = { 'markdown', 'markdown_inline' },
-  highlight = { enable = true },
-})
+local ok_ts, ts = pcall(require, 'nvim-treesitter.configs')
+if ok_ts then
+  ts.setup({
+    ensure_installed = { 'markdown', 'markdown_inline' },
+    highlight = { enable = true },
+  })
+end
 
-require('render-markdown').setup({})
+local ok_rm, rm = pcall(require, 'render-markdown')
+if ok_rm then
+  rm.setup({})
+end
 EOF
 
 "diffview--------------------------------
