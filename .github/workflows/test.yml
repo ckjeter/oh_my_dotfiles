@@ -35,4 +35,7 @@ jobs:
         run: sh ~/.dotfiles/ghostty/install.sh
 
       - name: Verify ghostty symlinks
-        run: test -L ~/.config/ghostty/config || (echo "~/.config/ghostty/config symlink missing" && exit 1)
+        run: |
+          test -L ~/.config/ghostty/config || (echo "~/.config/ghostty/config symlink missing" && exit 1)
+          test -L ~/.config/ghostty/themes/catppuccin-mocha.conf || (echo "ghostty mocha theme symlink missing" && exit 1)
+          test -L ~/.config/ghostty/themes/catppuccin-macchiato.conf || (echo "ghostty macchiato theme symlink missing" && exit 1)
