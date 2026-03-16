@@ -55,7 +55,8 @@ run '~/.tmux/plugins/tpm/tpm'
 # Status bar layout (v2 API — must come after plugin load)
 set -g status-left-length 100
 set -g status-right-length 100
+set -g status-left ""
 set -g status-left "#{E:@catppuccin_status_session}"
 set -g status-right "#{E:@catppuccin_status_application}"
-set -agF status-right "#{E:@catppuccin_status_cpu}"
+set -ag status-right "#[fg=#{@thm_crust},bg=#{@thm_green}]  #{cpu_percentage} #[fg=#{@thm_green},bg=#{@thm_surface0}]"
 set -ag status-right "#{E:@catppuccin_status_date_time}"
