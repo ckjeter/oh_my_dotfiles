@@ -46,3 +46,4 @@ Not started. Needs careful audit of current `~/.zshrc` before implementing.
 - No nvim → Lua migration
 - No stow (manual symlinks are fine at this scale)
 - No oh-my-zsh removal (it works fine)
+- No avante.nvim — would replace Claude Code CLI with a weaker in-editor API integration; Claude Code + diffview is the preferred workflow
