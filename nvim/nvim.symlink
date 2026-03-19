@@ -81,6 +81,17 @@ if ok then
   vim.cmd('colorscheme catppuccin')
 end
 
+vim.api.nvim_create_autocmd('FocusLost', {
+  callback = function()
+    vim.api.nvim_set_hl(0, 'Normal', { bg = '#11111b' })
+  end,
+})
+vim.api.nvim_create_autocmd('FocusGained', {
+  callback = function()
+    vim.cmd('colorscheme catppuccin')
+  end,
+})
+
 local ok_ll, lualine = pcall(require, 'lualine')
 if ok_ll then
   lualine.setup({})

@@ -9,6 +9,7 @@ bind-key -T copy-mode-vi v send-keys -X begin-selection
 bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
 bind-key Z select-layout tiled
 set -s escape-time 0
+set -g focus-events on
 
 set -g default-shell /bin/zsh
 set -g allow-rename off
@@ -71,3 +72,7 @@ set -ag status-right "#{E:@catppuccin_status_date_time}"
 set -g pane-border-lines heavy
 set -g pane-border-style 'fg=#45475a'
 set -g pane-active-border-style 'fg=#cba6f7'
+
+# Inactive pane background tint
+set -g window-style 'fg=#585b70,bg=#11111b'
+set -g window-active-style 'fg=#cdd6f4,bg=#1e1e2e'
