@@ -49,9 +49,21 @@ Unified navigation across Neovim splits and tmux panes — no prefix needed:
 |-----|--------|
 | `gd` | Go to definition |
 | `gr` | Go to references |
-| `K` | Hover documentation |
+| `K` | Hover documentation / type info |
 | `\rn` | Rename symbol |
 | `[g` / `]g` | Previous / next diagnostic |
+
+> Diagnostic float appears automatically after 300ms when cursor rests on an error. Run `:CocList diagnostics` to see all.
+
+### Installed Extensions
+
+| Extension | Languages |
+|-----------|-----------|
+| `coc-tsserver` | JavaScript, TypeScript, JSX, TSX |
+| `coc-eslint` | JS/TS linting |
+| `coc-clangd` | C, C++ (requires `brew install llvm`) |
+
+Install new: `:CocInstall coc-<name>` — e.g. `coc-pyright` (Python), `coc-java`, `coc-go`
 
 ---
 
@@ -87,7 +99,13 @@ Unified navigation across Neovim splits and tmux panes — no prefix needed:
 | `zR` / `zM` | Open all / close all folds |
 | `ge` | Follow link under cursor |
 
-> Spell check, concealing, and header folding are auto-enabled in `.md` files.
+> Spell check, concealing, and header folding are auto-enabled in `.md` files. Wavy underlines are spell check, not coc diagnostics.
+
+| Key | Action |
+|-----|--------|
+| `zg` | Mark word as correct (add to dictionary) |
+| `zw` | Mark word as wrong |
+| `z=` | Show spelling suggestions |
 
 ---
 
