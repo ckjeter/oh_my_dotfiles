@@ -112,8 +112,12 @@ Both machines use the same `C-a` prefix on purpose, so muscle memory carries ove
 Jumps to any window in any session. Each row shows, instantly:
 
 ```
-CMU-Logixian:3   kitchen   2h  [main +9]   ✳🌙 Claude Code
+CMU-Logixian:3   kitchen   2h  main +9        ✳🌙 Claude Code
 ```
+
+Fixed column budgets (long branch names truncate with `~`, the dirty count
+always survives), so the agent column never drifts. The git cell is green
+when clean and yellow when dirty; the window name is cyan and the age dim.
 
 - **Order** is per-window MRU: how recently you were in each window, so the
   top entry is always the one you just came from, never clumped by session
