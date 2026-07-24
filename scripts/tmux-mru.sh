@@ -94,7 +94,13 @@ cmd_list() {
       }
       if (active == 1 || !(win in wpath)) wpath[win] = path
     }
+    # hard column budgets so a long branch can never push the agent column
+    # around; pad the plain text first, then color the padded cell, because
+    # sprintf counts ANSI bytes as width
+    function clip(s, w) { return (length(s) > w) ? substr(s, 1, w - 1) "~" : s }
     END {
+      DIM = "\033[2m"; CYAN = "\033[36m"; GREEN = "\033[32m"
+      YELLOW = "\033[33m"; RESET = "\033[0m"
       for (i = 1; i <= m; i++) {
         win = order[i]
         if (win == cur) continue
@@ -103,14 +109,21 @@ cmd_list() {
         age = ""
         if ((win in lastseen) && lastseen[win] != "")
           age = rel(now - lastseen[win])
-        p = wpath[win]; badge = ""
+        p = wpath[win]; git = ""; dirty = 0
         if ((p in gbranch) && gbranch[p] != "") {
-          badge = "[" gbranch[p] (gdirty[p] > 0 ? " +" gdirty[p] : "") "]"
+          dirty = gdirty[p] + 0
+          # the dirty count always fits; the branch gets whatever is left
+          suffix = (dirty > 0 ? " +" dirty : "")
+          git = clip(gbranch[p], 14 - length(suffix)) suffix
         }
         ab = ""
         if (win in aicons)
           ab = sprintf("%s %s", aicons[win], atask[win])
-        line = sprintf("%-18s %-14s %5s  %-16s %s", win, wname[win], age, badge, ab)
+        line = sprintf("%-16s ", clip(win, 16))
+        line = line CYAN sprintf("%-12s", clip(wname[win], 12)) RESET " "
+        line = line DIM sprintf("%4s", age) RESET "  "
+        line = line (dirty > 0 ? YELLOW : GREEN) sprintf("%-14s", git) RESET " "
+        line = line ab
         printf "%04d\t%s\t%s\n", (win in rank ? rank[win] : 1000 + i), win, line
       }
     }
@@ -123,9 +136,9 @@ cmd_switch() {
   self="$0"
   # tier 1: refresh the git cache while the user is already looking at the list
   ( "$self" refresh-git > /dev/null 2>&1 & )
-  sel="$(cmd_list | fzf --no-sort --reverse --prompt='switch> ' \
+  sel="$(cmd_list | fzf --ansi --no-sort --reverse --prompt='switch> ' \
           --delimiter="$TAB" --with-nth=2 \
-          --preview="$self preview {1}" --preview-window='right,55%,wrap' \
+          --preview="$self preview {1}" --preview-window='right,50%,wrap' \
           --bind="ctrl-r:reload($self list)" \
         | cut -f1)"
   [ -n "$sel" ] && tmux switch-client -t "$sel"
