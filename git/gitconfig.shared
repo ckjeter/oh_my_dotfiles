@@ -1,8 +1,9 @@
-[user]
-	name = Kuan Wu
-	email = ckjeter7@gmail.com
-[github]
-	user = ckjeter
+# Shared git settings, included from ~/.gitconfig.
+#
+# ~/.gitconfig itself stays machine-local and untracked, because git writes to
+# it at runtime: identity, credential helpers, `git lfs install`, `gh auth
+# setup-git`. Nothing here should be machine-specific.
+
 [alias]
 	br = branch
 	p = add -p
@@ -25,12 +26,5 @@
 	prompt = false
 [push]
 	default = upstream
-[commit]
-	gpgsign = false
 [hub]
 	protocol = https
-[filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
