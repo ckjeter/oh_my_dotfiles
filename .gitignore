@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Claude Code: local session state, permissions, and scaffolded skills.
+# Not portable and not in use, so kept out of the repo entirely.
+.claude/
+
+# legacy full-repo snapshot, superseded by git history
+dotfile.zip
