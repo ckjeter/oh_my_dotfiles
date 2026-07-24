@@ -10,6 +10,6 @@ nvim	required	the editor nvim/nvim.symlink targets. Ubuntu ships 0.9, too old fo
 starship	required	draws the shell prompt. Without it zsh falls back to a bare prompt and the tracked starship.toml does nothing	brew install starship	curl -sS https://starship.rs/install.sh | sudo sh -s -- --yes
 fzf	required	prefix + Tab window switching in tmux, the git coi alias, and Ctrl-P in nvim	brew install fzf	sudo apt install -y fzf
 rg	optional	backs the Leader-p project search in nvim. Without it that one mapping fails	brew install ripgrep	sudo apt install -y ripgrep
-jq	optional	parses agent session history (lazyagent JSON) for the tmux Tab switcher preview	brew install jq	sudo apt install -y jq
+jq	optional	Claude Code statusline rendering, and agent session history in the tmux Tab switcher preview	brew install jq	sudo apt install -y jq
 node	optional	runtime for coc.nvim and copilot. Without it both stay unloaded and the rest of nvim is unaffected	brew install node	sudo apt install -y nodejs npm
 cc	optional	C compiler for building treesitter parsers. Without it markdown highlighting falls back to the parsers nvim bundles	xcode-select --install	sudo apt install -y build-essential

@@ -13,7 +13,7 @@ DOTFILES="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 export DOTFILES
 . "$DOTFILES/scripts/lib.sh"
 
-for tool in git zsh starship tmux nvim hosts; do
+for tool in git zsh starship tmux nvim claude hosts; do
   echo "==> $tool"
   sh "$DOTFILES/$tool/install.sh"
 done

@@ -42,6 +42,7 @@ Personal portable dev environment. Managed as a side project.
 | tmux/ | tmux.conf + tpm |
 | nvim/ | vimrc (minimal, quick edits) |
 | git/ | aliases and shared settings only. Identity, credentials, and LFS filters stay machine-local |
+| claude/ | Claude Code statusline. `~/.claude/settings.json` stays machine-local; the installer sets only the statusLine key |
 | hosts/ | per-machine shell config and written record, named by short hostname |
 | scripts/ | shared install helpers, `doctor.sh`, `requirements.tsv`, terminfo push, tmux session ordering |
 | starship/ | starship.toml |
