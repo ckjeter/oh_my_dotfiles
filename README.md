@@ -16,6 +16,7 @@ If these configs look bad, I'm just not nerdy enough yet.
 | Neovim | `nvim/` | Minimal config for quick terminal edits |
 | Git | `git/` | Aliases and shared settings, included from a local `~/.gitconfig` |
 | Ghostty | `ghostty/` | Terminal config, laptop only |
+| Claude Code | `claude/` | Status line script, wired into a machine-local `~/.claude/settings.json` |
 
 ---
 
