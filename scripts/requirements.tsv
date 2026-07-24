@@ -1,0 +1,15 @@
+# Tools this environment expects. Nothing in this repo installs them, because
+# several want interactive setup and that decision is the operator's.
+#
+# Tab-separated. Columns: tool, need, what it is for, macOS command, Linux command
+# {arch} in a Linux command is replaced with this machine's architecture.
+git	required	cloning this repo, and the plugin managers for tmux and nvim shell out to it	xcode-select --install	sudo apt install -y git
+zsh	required	the login shell everything else assumes. Making it the default needs an interactive chsh, so that stays yours	brew install zsh	sudo apt install -y zsh
+tmux	required	terminal multiplexer. Everything in tmux/ is inert without it	brew install tmux	sudo apt install -y tmux
+nvim	required	the editor nvim/nvim.symlink targets. Ubuntu ships 0.9, too old for the OSC 52 clipboard, so take the upstream build	brew install neovim	curl -fsSL https://github.com/neovim/neovim/releases/latest/download/nvim-linux-{arch}.tar.gz | sudo tar -C /opt -xzf - && sudo ln -sfn /opt/nvim-linux-{arch}/bin/nvim /usr/local/bin/nvim
+starship	required	draws the shell prompt. Without it zsh falls back to a bare prompt and the tracked starship.toml does nothing	brew install starship	curl -sS https://starship.rs/install.sh | sudo sh -s -- --yes
+fzf	required	prefix + Tab window switching in tmux, the git coi alias, and Ctrl-P in nvim	brew install fzf	sudo apt install -y fzf
+rg	optional	backs the Leader-p project search in nvim. Without it that one mapping fails	brew install ripgrep	sudo apt install -y ripgrep
+jq	optional	parses agent session history (lazyagent JSON) for the tmux Tab switcher preview	brew install jq	sudo apt install -y jq
+node	optional	runtime for coc.nvim and copilot. Without it both stay unloaded and the rest of nvim is unaffected	brew install node	sudo apt install -y nodejs npm
+cc	optional	C compiler for building treesitter parsers. Without it markdown highlighting falls back to the parsers nvim bundles	xcode-select --install	sudo apt install -y build-essential
