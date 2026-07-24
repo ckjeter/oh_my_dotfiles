@@ -26,6 +26,11 @@ Unified navigation across Neovim splits and tmux panes — no prefix needed:
 | `<C-e>` | Switch buffers (fzf) |
 | `\p` | Live grep (ripgrep via fzf) |
 
+> NERDTree shows a git status glyph before each file and folder, VSCode-style,
+> so agent-written changes are visible at a glance (untracked, modified,
+> staged, dirty subtree). It refreshes on write and when the cursor rests.
+> Needs a nerd font, already required by the file icons.
+
 ---
 
 ## Git
