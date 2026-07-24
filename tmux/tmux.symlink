@@ -1,4 +1,4 @@
-# for Mac zsh
+# shared by the macOS laptop and Linux dev servers
 set -g default-terminal "tmux-256color"
 set -ag terminal-overrides ",xterm-256color:RGB"
 # remap prefix from 'C-b' to 'C-a'
@@ -8,8 +8,32 @@ bind-key C-a send-prefix
 bind-key -T copy-mode-vi v send-keys -X begin-selection
 bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
 bind-key Z select-layout tiled
+
+# Nested sessions (local tmux -> ssh -> remote tmux) share this prefix.
+# C-a C-a <key> reaches the inner session. F12 goes further and mutes the outer
+# one entirely, so every key including the bare prefix lands inside. F12 again
+# takes control back.
+bind-key -T root F12 \
+  set prefix None \;\
+  set key-table off \;\
+  set status-style 'fg=#585b70,bg=#11111b' \;\
+  refresh-client -S
+bind-key -T off F12 \
+  set -u prefix \;\
+  set -u key-table \;\
+  set -u status-style \;\
+  refresh-client -S
+# prefix + Tab: fzf window switcher, ordered by how recently each window was
+# focused (true per-window MRU, not clumped by session), with a marker and the
+# task for any window running a coding agent. See scripts/tmux-mru.sh.
+bind-key Tab display-popup -E -w 80% -h 70% "~/.dotfiles/scripts/tmux-mru.sh switch"
+# feed the MRU stack: record the focused window on every window/session change.
+set-hook -g session-window-changed "run-shell -b \"~/.dotfiles/scripts/tmux-mru.sh record '#{session_name}:#{window_index}'\""
+set-hook -g client-session-changed "run-shell -b \"~/.dotfiles/scripts/tmux-mru.sh record '#{session_name}:#{window_index}'\""
 set -s escape-time 0
 set -g focus-events on
+# send copies to the outer terminal via OSC 52 so yanking works over SSH
+set -g set-clipboard on
 
 set -g default-shell /bin/zsh
 set -g allow-rename off
@@ -51,22 +75,34 @@ set -g @catppuccin_window_current_text ' #W '
 # Module options (must be set before plugin loads)
 set -g @catppuccin_date_time_text ' %a %H:%M'
 
-run '~/.tmux/plugins/tpm/tpm'
-
 # tmux-battery uses one-time string replacement in status-right at load time,
 # which is incompatible with catppuccin v2's deferred option expansion.
 # Override with direct script paths so they resolve at render time.
 set -g @catppuccin_battery_icon "#(~/.tmux/plugins/tmux-battery/scripts/battery_icon.sh) "
 set -g @catppuccin_battery_text " #(~/.tmux/plugins/tmux-battery/scripts/battery_percentage.sh)"
 
+run '~/.tmux/plugins/tpm/tpm'
+
+# tmux-yank shells out to pbcopy on macOS and xclip/xsel on Linux. A headless
+# server has neither, so keep tmux's own copy there and let set-clipboard
+# forward it to the local machine.
+if-shell '[ "$(uname)" != Darwin ]' {
+  bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+  bind-key -T copy-mode-vi M-y send-keys -X copy-selection-and-cancel \; paste-buffer -p
+}
+
 # Status bar layout (v2 API — must come after plugin load)
 set -g status-left-length 100
 set -g status-right-length 100
-set -g status-left "#{E:@catppuccin_status_session} #[bg=default]"
-set -ag status-left " "
-set -g status-right "#{E:@catppuccin_status_application} "
-set -ag status-right "#{E:@catppuccin_status_battery} "
-set -ag status-right "#{E:@catppuccin_status_date_time}"
+# Servers get a hostname badge so a nested remote session is never mistaken
+# for the local one.
+if-shell '[ "$(uname)" = Darwin ]' \
+  'set -g status-left "#{E:@catppuccin_status_session} #[bg=default] "' \
+  'set -g status-left "#[fg=#11111b,bg=#f9e2af,bold] #h #[fg=default,bg=default,nobold] #{E:@catppuccin_status_session} #[bg=default] "'
+# Only the laptop has a battery; servers get application + clock.
+if-shell '[ "$(uname)" = Darwin ]' \
+  'set -g status-right "#{E:@catppuccin_status_application} #{E:@catppuccin_status_battery} #{E:@catppuccin_status_date_time}"' \
+  'set -g status-right "#{E:@catppuccin_status_application} #{E:@catppuccin_status_date_time}"'
 
 # Pane border colors (Catppuccin Mocha)
 set -g pane-border-lines heavy

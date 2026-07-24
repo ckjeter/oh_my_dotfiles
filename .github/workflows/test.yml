@@ -11,31 +11,113 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check all install.sh syntax
-        run: find . -name "install.sh" | xargs -I{} bash -n {}
+      - name: Check all shell script syntax
+        run: find . -name "*.sh" | xargs -I{} bash -n {}
+
+      - name: Installers must be POSIX sh, that is how they are invoked
+        run: |
+          find . -name "install.sh" | xargs -I{} sh -n {}
+          sh -n scripts/lib.sh
 
   install:
-    name: Install and verify symlinks
-    runs-on: macos-latest
+    name: Symlinks (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    env:
+      DOTFILES_SKIP_PLUGINS: 1
     steps:
       - uses: actions/checkout@v4
 
       - name: Link repo to ~/.dotfiles
-        run: ln -sf $GITHUB_WORKSPACE ~/.dotfiles
+        run: ln -sfn $GITHUB_WORKSPACE ~/.dotfiles
 
-      - name: Run nvim install
-        run: sh ~/.dotfiles/nvim/install.sh
+      - name: Run root install
+        run: sh ~/.dotfiles/install.sh
 
-      - name: Verify nvim symlinks
+      - name: Verify symlinks
         run: |
-          test -L ~/.vimrc || (echo "~/.vimrc symlink missing" && exit 1)
-          test -L ~/.config/nvim/init.vim || (echo "~/.config/nvim/init.vim symlink missing" && exit 1)
+          for f in ~/.tmux.conf ~/.vimrc ~/.config/nvim/init.vim ~/.config/starship.toml; do
+            test -L "$f" || { echo "$f symlink missing"; exit 1; }
+          done
 
-      - name: Run ghostty install
-        run: sh ~/.dotfiles/ghostty/install.sh
+      - name: Verify git includes the shared config instead of symlinking it
+        run: |
+          test ! -L ~/.gitconfig || { echo "~/.gitconfig must stay a local file"; exit 1; }
+          git config --get include.path | grep -q gitconfig.shared
+          test "$(git config --get alias.st)" = status
 
       - name: Verify ghostty symlinks
+        if: runner.os == 'macOS'
         run: |
-          test -L ~/.config/ghostty/config || (echo "~/.config/ghostty/config symlink missing" && exit 1)
+          test -L ~/.config/ghostty/config || (echo "ghostty config symlink missing" && exit 1)
           test -L ~/.config/ghostty/themes/catppuccin-mocha.conf || (echo "ghostty mocha theme symlink missing" && exit 1)
           test -L ~/.config/ghostty/themes/catppuccin-macchiato.conf || (echo "ghostty macchiato theme symlink missing" && exit 1)
+
+      - name: Re-run install (must be idempotent)
+        run: sh ~/.dotfiles/install.sh
+
+      - name: Managed ~/.zshrc blocks stay unique
+        run: |
+          for line in 'starship init zsh' 'GPG_TTY'; do
+            n=$(grep -c "$line" ~/.zshrc || true)
+            test "$n" -le 1 || { echo "'$line' appended $n times"; exit 1; }
+          done
+          dupes=$(grep '^# >>> oh_my_dotfiles:' ~/.zshrc | sort | uniq -d)
+          test -z "$dupes" || { echo "duplicate managed blocks: $dupes"; exit 1; }
+
+      - name: doctor runs without crashing
+        run: sh ~/.dotfiles/scripts/doctor.sh > /dev/null
+
+  bootstrap:
+    name: Full bootstrap on a bare Ubuntu container
+    runs-on: ubuntu-latest
+    container: ubuntu:24.04
+    steps:
+      - name: Bare-image prerequisites
+        run: |
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git curl ca-certificates sudo
+
+      - uses: actions/checkout@v4
+
+      - name: Link repo to ~/.dotfiles
+        run: ln -sfn $GITHUB_WORKSPACE ~/.dotfiles
+
+      # The repo never installs tools. Here CI plays the operator, running the
+      # commands requirements.tsv documents, which also proves they still work.
+      - name: Install what requirements.tsv asks for
+        run: |
+          DOTFILES=~/.dotfiles sh -c '. ~/.dotfiles/scripts/lib.sh; missing_tool_commands required' | tee /tmp/tool-commands
+          sh -e /tmp/tool-commands
+
+      - name: Run root install
+        run: sh ~/.dotfiles/install.sh
+
+      - name: Verify tools landed
+        run: |
+          command -v zsh
+          command -v tmux
+          command -v nvim
+          command -v starship
+          command -v fzf
+
+      - name: Verify tmux config parses and picks the Linux branch
+        run: |
+          tmux -f ~/.tmux.conf -L ci new-session -d 'sleep 30'
+          if tmux -L ci show-options -gv status-right | grep -q battery; then
+            echo "battery leaked into a server status bar"
+            exit 1
+          fi
+          test "$(tmux -L ci show-options -gv set-clipboard)" = on
+          tmux -L ci list-keys -T copy-mode-vi | grep -q 'y .*copy-selection-and-cancel'
+          tmux -L ci kill-server
+
+      - name: Verify nvim and plain vim both start clean
+        run: |
+          out=$(nvim --headless +qall 2>&1) || true
+          test -z "$out" || { echo "nvim printed on startup: $out"; exit 1; }
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq vim
+          vim -es -c q < /dev/null

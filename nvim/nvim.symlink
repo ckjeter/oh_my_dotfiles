@@ -31,10 +31,29 @@ nmap <C-e> :Buffers<CR>
 let g:fzf_action = { 'ctrl-e': 'edit' }
 nnoremap <silent> <Leader>p :Rg<CR>
 
+"neovim only below--------------------
+" Plain vim (macOS system vim, Ubuntu vim) is built without +lua and cannot
+" parse the lua blocks below. It keeps the settings above and stops here.
+if !has('nvim')
+  finish
+endif
+
+"clipboard----------------------------
+" A headless server has no X clipboard, and setting 'clipboard' suppresses
+" nvim's own OSC 52 fallback, so ask for it explicitly. Inside tmux the tmux
+" provider already forwards yanks through set-clipboard.
+if !empty($SSH_TTY) && empty($TMUX)
+  let g:clipboard = 'osc52'
+endif
+
 "plugins------------------------------
+" coc and copilot are node processes; a bare server may not have node
+let s:has_node = executable('node')
+
 call plug#begin('~/.config/nvim/plugged')
 
 Plug 'preservim/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
@@ -44,18 +63,21 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'APZelos/blamer.nvim'
 Plug 'MattesGroeger/vim-bookmarks'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
 Plug 'yuezk/vim-js'
 Plug 'maxmellon/vim-jsx-pretty'
-Plug 'github/copilot.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'sindrets/diffview.nvim'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'MeanderingProgrammer/render-markdown.nvim'
 Plug 'nvim-lualine/lualine.nvim'
 Plug 'akinsho/bufferline.nvim'
+
+if s:has_node
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'github/copilot.vim'
+endif
 
 call plug#end()
 
@@ -124,12 +146,22 @@ let g:NERDTreeHighlightFolders = 1
 let g:NERDTreeShowLineNumbers = 1
 let g:NERDTreeQuitOnOpen = 0
 
+"nerdtree-git-plugin------------------
+" show git status next to each file, VSCode/Cursor style, for reviewing
+" agent-written changes. Nerd font glyphs since devicons already needs them.
+let g:NERDTreeGitStatusUseNerdFonts = 1
+" also flag folders that contain changes, so a dirty subtree is visible collapsed
+let g:NERDTreeGitStatusShowClean = 0
+let g:NERDTreeGitStatusConcealBrackets = 1
+
 "fzf----------------------------------
 let g:fzf_default_command = 'Hidden Files'
 
 "coc----------------------------------
-set completeopt=menuone,noinsert,noselect
-autocmd CursorHold * silent call CocActionAsync('highlight')
+if s:has_node
+  set completeopt=menuone,noinsert,noselect
+  autocmd CursorHold * silent call CocActionAsync('highlight')
+endif
 
 "vim-bookmark-------------------------
 let g:bookmark_save_per_working_dir = 1
@@ -139,9 +171,11 @@ let g:bookmark_auto_save = 1
 let g:vim_jsx_pretty_colorful_config = 1
 
 "copilot
-let g:copilot_enabled = 1
-let g:copilot_no_tab_map = v:true
-inoremap <silent><script><expr> <Tab> copilot#Accept("\<Tab>")
+if s:has_node
+  let g:copilot_enabled = 1
+  let g:copilot_no_tab_map = v:true
+  inoremap <silent><script><expr> <Tab> copilot#Accept("\<Tab>")
+endif
 
 inoremap <silent><expr> <S-Tab>
       \ pumvisible() ? "\<C-p>" : "\<C-g>U\<C-w>"
@@ -158,8 +192,10 @@ autocmd FileType markdown setlocal spell spelllang=en_us
 lua << EOF
 local ok_ts, ts = pcall(require, 'nvim-treesitter.configs')
 if ok_ts then
+  -- parsers are compiled on install; skip that on a box with no C compiler
+  local can_compile = vim.fn.executable('cc') == 1 or vim.fn.executable('gcc') == 1
   ts.setup({
-    ensure_installed = { 'markdown', 'markdown_inline' },
+    ensure_installed = can_compile and { 'markdown', 'markdown_inline' } or {},
     highlight = {
       enable = true,
       disable = function(lang)
@@ -176,7 +212,10 @@ end
 EOF
 
 "diffview--------------------------------
-lua require('diffview').setup({})
+lua pcall(function() require('diffview').setup({}) end)
 nnoremap <leader>dv :DiffviewOpen<CR>
 nnoremap <leader>dc :DiffviewClose<CR>
 nnoremap <leader>dh :DiffviewFileHistory %<CR>
+
+"wrap toggle---------------------------------
+nnoremap <leader>w :set wrap! linebreak!<CR>

@@ -1,17 +1,19 @@
-# primary editor is Cursor — this config is for quick terminal edits only
+#!/bin/sh
+# primary editor is Cursor, this config is for quick terminal edits only
+set -e
+. "$(dirname "$0")/../scripts/lib.sh"
 
-# symlink setup
-ln -sf ~/.dotfiles/nvim/nvim.symlink ~/.vimrc
-mkdir -p ~/.config/nvim
-ln -sf ~/.vimrc ~/.config/nvim/init.vim
+link "$DOTFILES/nvim/nvim.symlink" "$HOME/.vimrc"
+link "$HOME/.vimrc" "$HOME/.config/nvim/init.vim"
 
-# vim-plug install
-curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+# vim-plug is the plugin manager the vimrc calls, not a system package
+curl -fsSLo "$HOME/.local/share/nvim/site/autoload/plug.vim" --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-# install plugins (skipped if nvim is not available, e.g. CI)
-if command -v nvim > /dev/null 2>&1; then
-  nvim +PlugInstall +qall
+if [ -n "${DOTFILES_SKIP_PLUGINS:-}" ]; then
+  echo "DOTFILES_SKIP_PLUGINS set, run ':PlugInstall' yourself"
+elif have nvim; then
+  nvim --headless +PlugInstall +qall
 else
-  echo "nvim not found — skipping plugin install. Run ':PlugInstall' manually after installing nvim."
+  echo "nvim is not installed, run ':PlugInstall' once it is"
 fi
