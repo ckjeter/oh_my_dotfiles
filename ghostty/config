@@ -50,4 +50,6 @@
 
 theme = catppuccin-macchiato
 
+font-feature = -calt, -liga, -dlig
+
 font-codepoint-map = U+3000-U+303F,U+3400-U+4DBF,U+4E00-U+9FFF,U+F900-U+FAFF,U+FF00-U+FFEF=Noto Sans TC
