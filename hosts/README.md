@@ -3,14 +3,15 @@
 Per-machine additions, tracked. This is where a machine gets to be different
 without the shared configs forking.
 
-Two kinds of file, both named after the machine's short hostname:
+Files named after the machine's short hostname (`hostname -s`):
 
 | File | What it is |
 |------|-----------|
 | `<hostname>.zsh` | Sourced at the end of `~/.zshrc`, from the `oh_my_dotfiles:host` block. Aliases, PATH entries, env vars that only make sense on that box |
 | `<hostname>.md` | The written record: what else is installed on this machine, why, and anything an agent or a future you would otherwise have to rediscover |
+| `<hostname>.tmux` | Sourced by `tmux/tmux.symlink`. Sets `@host_name`, `@host_color`, `@host_icon` for the pill at the right end of the status bar that names a remote machine. Give each server its own color. Without it no pill shows, which marks the local machine |
 
-Neither is created for you. A machine with nothing special needs neither.
+None of them is created for you. A machine with nothing special needs none.
 
 ## Why a record file
 

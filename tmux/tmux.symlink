@@ -90,6 +90,13 @@ set -g @catppuccin_flavor 'mocha'
 set -g @catppuccin_window_status_style 'rounded'
 set -g @catppuccin_window_text ' #W '
 set -g @catppuccin_window_current_text ' #W '
+# agent-deck starts each agent through bash and automatic-rename is off, so the
+# agent's window reads "bash". Show the session's agent-deck title there
+# instead. It follows a rename in agent-deck and leaves renamed windows alone.
+if-shell -F '#{?@main_server,0,1}' {
+  set -g @catppuccin_window_text ' #{?#{&&:#{@agentdeck_display_name},#{==:#{window_name},bash}},#{@agentdeck_display_name},#W} '
+  set -g @catppuccin_window_current_text ' #{?#{&&:#{@agentdeck_display_name},#{==:#{window_name},bash}},#{@agentdeck_display_name},#W} '
+}
 
 # Module options (must be set before plugin loads)
 set -g @catppuccin_date_time_text ' %a %H:%M'
@@ -115,32 +122,34 @@ if-shell '[ "$(uname)" != Darwin ]' {
 # Status bar layout (v2 API — must come after plugin load)
 set -g status-left-length 100
 set -g status-right-length 100
-# Servers get a hostname badge so a nested remote session is never mistaken
-# for the local one. The main server shows the session label. On the
-# agent-deck server status-left is its notification bar while a session is
-# waiting, and empty otherwise (one agent per session, so the bar and the
-# window list carry the name). A reload leaves a live bar alone: agent-deck
-# only rewrites it when its content changes.
+# The main server shows the session label. On the agent-deck server
+# status-left is its notification bar while a session is waiting, and empty
+# otherwise (tmux-side-status.sh puts the group and session names next to the
+# windows). A reload leaves a live bar alone: agent-deck only rewrites it when
+# its content changes.
 if-shell -F '#{@main_server}' {
-  if-shell '[ "$(uname)" = Darwin ]' \
-    'set -g status-left "#{E:@catppuccin_status_session} #[bg=default] "' \
-    'set -g status-left "#[fg=#11111b,bg=#f9e2af,bold] #h #[fg=default,bg=default,nobold] #{E:@catppuccin_status_session} #[bg=default] "'
+  set -g status-left "#{E:@catppuccin_status_session} #[bg=default] "
 } {
-  if-shell -F '#{m:⚡ *,#{status-left}}' '' {
-    if-shell '[ "$(uname)" = Darwin ]' \
-      'set -g status-left ""' \
-      'set -g status-left "#[fg=#11111b,bg=#f9e2af,bold] #h #[fg=default,bg=default,nobold] "'
-  }
+  if-shell -F '#{m:⚡ *,#{status-left}}' '' 'set -g status-left ""'
   set -g status-left-style 'fg=#f9e2af,bold'
-  run-shell 'sh ~/.dotfiles/scripts/tmux-status-divider.sh'
+  run-shell 'sh ~/.dotfiles/scripts/tmux-side-status.sh'
 }
-# Only the laptop has a battery; servers get application + clock. Kept in a
-# user option so agent-deck, which sets status-right on each of its sessions,
-# can point at the same value from one config.toml on every machine
-# (see agent-deck/config.toml).
+# Remote machines name themselves in a pill at the right end, set in
+# hosts/<hostname>.tmux (@host_name, @host_color, @host_icon), so each server
+# gets its own color. A machine without that file is the local one and shows
+# no pill. In a nested session the inner bar sits above the outer one. Only
+# the laptop has a battery. Kept in a user option so agent-deck, which sets
+# status-right on each of its sessions, can point at the same value from one
+# config.toml on every machine (see agent-deck/tmux.toml).
+set -g @host_name ''
+set -g @host_color '#f9e2af'
+set -g @host_icon '󰒋'
+source-file -qF "~/.dotfiles/hosts/#{host_short}.tmux"
+set -g @host_pill '#[fg=#{@host_color}]#[fg=#11111b,bg=#{@host_color}]#{@host_icon} #[fg=#cdd6f4,bg=#313244] #{E:@host_name}#[fg=#313244] #[default]'
+set -g @status_host '#{?@host_name, #{E:@host_pill},}'
 if-shell '[ "$(uname)" = Darwin ]' \
-  'set -g @status_right_main "#{E:@catppuccin_status_application} #{E:@catppuccin_status_battery} #{E:@catppuccin_status_date_time}"' \
-  'set -g @status_right_main "#{E:@catppuccin_status_application} #{E:@catppuccin_status_date_time}"'
+  'set -g @status_right_main "#{E:@catppuccin_status_battery} #{E:@catppuccin_status_date_time}#{E:@status_host}"' \
+  'set -g @status_right_main "#{E:@catppuccin_status_date_time}#{E:@status_host}"'
 set -g status-right '#{E:@status_right_main}'
 # continuum autosaves from a script it puts in status-right while tpm loads,
 # which the line above replaces. Put it back. It prints nothing.
@@ -150,6 +159,10 @@ if-shell -F '#{@main_server}' {
   if-shell '[ $(( $(date +%s) - #{start_time} )) -lt 15 ]' \
     'run-shell -b "~/.tmux/plugins/tmux-resurrect/scripts/restore.sh"'
 }
+
+# tmux 3.8 underlines the current window by default. catppuccin already
+# colors it, and the underline would also run under the side-server pills.
+set -g window-status-current-style default
 
 # Pane border colors (Catppuccin Mocha)
 set -g pane-border-lines heavy
