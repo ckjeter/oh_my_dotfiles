@@ -5,7 +5,8 @@
 # {arch} in a Linux command is replaced with this machine's architecture.
 git	required	cloning this repo, and the plugin managers for tmux and nvim shell out to it	xcode-select --install	sudo apt install -y git
 zsh	required	the login shell everything else assumes. Making it the default needs an interactive chsh, so that stays yours	brew install zsh	sudo apt install -y zsh
-tmux	required	terminal multiplexer. Everything in tmux/ is inert without it	brew install tmux	sudo apt install -y tmux
+tmux	required	terminal multiplexer. Everything in tmux/ is inert without it. agent-deck wants 3.5+, and Ubuntu 24.04 ships 3.4, so doctor.sh prints a source build when agent-deck is present	brew install tmux	sudo apt install -y tmux
+agent-deck	optional	runs each coding agent in its own session on a separate tmux server (tmux -L agent-deck). Keep its installer away from ~/.tmux.conf, which is a symlink into this repo	curl -fsSL https://raw.githubusercontent.com/asheshgoplani/agent-deck/main/install.sh | bash -s -- --skip-tmux-config	curl -fsSL https://raw.githubusercontent.com/asheshgoplani/agent-deck/main/install.sh | bash -s -- --skip-tmux-config
 nvim	required	the editor nvim/nvim.symlink targets. Ubuntu ships 0.9, too old for the OSC 52 clipboard, so take the upstream build	brew install neovim	curl -fsSL https://github.com/neovim/neovim/releases/latest/download/nvim-linux-{arch}.tar.gz | sudo tar -C /opt -xzf - && sudo ln -sfn /opt/nvim-linux-{arch}/bin/nvim /usr/local/bin/nvim
 starship	required	draws the shell prompt. Without it zsh falls back to a bare prompt and the tracked starship.toml does nothing	brew install starship	curl -sS https://starship.rs/install.sh | sudo sh -s -- --yes
 fzf	required	prefix + Tab window switching in tmux, the git coi alias, and Ctrl-P in nvim	brew install fzf	sudo apt install -y fzf

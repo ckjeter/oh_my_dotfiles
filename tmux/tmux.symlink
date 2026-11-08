@@ -27,6 +27,9 @@ bind-key -T off F12 \
 # focused (true per-window MRU, not clumped by session), with a marker and the
 # task for any window running a coding agent. See scripts/tmux-mru.sh.
 bind-key Tab display-popup -E -w 80% -h 70% "~/.dotfiles/scripts/tmux-mru.sh switch"
+# prefix + a: throwaway floating shell in the current pane's directory. exit or
+# C-d closes it.
+bind-key a display-popup -E -w 80% -h 75% -d "#{pane_current_path}"
 # feed the MRU stack: record the focused window on every window/session change.
 set-hook -g session-window-changed "run-shell -b \"~/.dotfiles/scripts/tmux-mru.sh record '#{session_name}:#{window_index}'\""
 set-hook -g client-session-changed "run-shell -b \"~/.dotfiles/scripts/tmux-mru.sh record '#{session_name}:#{window_index}'\""
@@ -62,8 +65,24 @@ set -g @plugin 'tmux-plugins/tmux-continuum'
 set -g @plugin 'christoomey/vim-tmux-navigator'
 set -g @plugin 'ChanderG/tmux-notify'
 
-set -g @continuum-restore 'on'
+# Several tmux servers load this file. The main one is the default socket and
+# holds your own sessions. agent-deck (tmux -L agent-deck) and the lazyagent
+# dashboard (tmux -L lazyagent-dashboard-*) start their own. Everything that
+# differs between them keys off this flag.
+set -gF @main_server '#{==:#{b:socket_path},default}'
+
 set -g @continuum-save-interval '15'
+set -g @resurrect-hook-post-save-layout 'sh ~/.dotfiles/scripts/tmux-resurrect-filter.sh'
+# Only the main server restores and autosaves. Restoring on another server
+# would pull the main sessions into it, and its saves would replace the main
+# one, so the others keep their own resurrect dir and never autosave.
+# continuum's own restore is off everywhere because it skips itself whenever
+# any other tmux server is running. The main server restores below instead.
+set -g @continuum-restore 'off'
+if-shell -F '#{?@main_server,0,1}' {
+  set -gF @resurrect-dir '~/.tmux/resurrect-#{b:socket_path}'
+  set -g @continuum-save-interval '0'
+}
 
 
 #Status Bar
@@ -89,20 +108,48 @@ run '~/.tmux/plugins/tpm/tpm'
 if-shell '[ "$(uname)" != Darwin ]' {
   bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
   bind-key -T copy-mode-vi M-y send-keys -X copy-selection-and-cancel \; paste-buffer -p
+  bind-key -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-selection-and-cancel
+  bind-key -T copy-mode MouseDragEnd1Pane send-keys -X copy-selection-and-cancel
 }
 
 # Status bar layout (v2 API — must come after plugin load)
 set -g status-left-length 100
 set -g status-right-length 100
 # Servers get a hostname badge so a nested remote session is never mistaken
-# for the local one.
+# for the local one. The main server shows the session label. On the
+# agent-deck server status-left is its notification bar while a session is
+# waiting, and empty otherwise (one agent per session, so the bar and the
+# window list carry the name). A reload leaves a live bar alone: agent-deck
+# only rewrites it when its content changes.
+if-shell -F '#{@main_server}' {
+  if-shell '[ "$(uname)" = Darwin ]' \
+    'set -g status-left "#{E:@catppuccin_status_session} #[bg=default] "' \
+    'set -g status-left "#[fg=#11111b,bg=#f9e2af,bold] #h #[fg=default,bg=default,nobold] #{E:@catppuccin_status_session} #[bg=default] "'
+} {
+  if-shell -F '#{m:⚡ *,#{status-left}}' '' {
+    if-shell '[ "$(uname)" = Darwin ]' \
+      'set -g status-left ""' \
+      'set -g status-left "#[fg=#11111b,bg=#f9e2af,bold] #h #[fg=default,bg=default,nobold] "'
+  }
+  set -g status-left-style 'fg=#f9e2af,bold'
+  run-shell 'sh ~/.dotfiles/scripts/tmux-status-divider.sh'
+}
+# Only the laptop has a battery; servers get application + clock. Kept in a
+# user option so agent-deck, which sets status-right on each of its sessions,
+# can point at the same value from one config.toml on every machine
+# (see agent-deck/config.toml).
 if-shell '[ "$(uname)" = Darwin ]' \
-  'set -g status-left "#{E:@catppuccin_status_session} #[bg=default] "' \
-  'set -g status-left "#[fg=#11111b,bg=#f9e2af,bold] #h #[fg=default,bg=default,nobold] #{E:@catppuccin_status_session} #[bg=default] "'
-# Only the laptop has a battery; servers get application + clock.
-if-shell '[ "$(uname)" = Darwin ]' \
-  'set -g status-right "#{E:@catppuccin_status_application} #{E:@catppuccin_status_battery} #{E:@catppuccin_status_date_time}"' \
-  'set -g status-right "#{E:@catppuccin_status_application} #{E:@catppuccin_status_date_time}"'
+  'set -g @status_right_main "#{E:@catppuccin_status_application} #{E:@catppuccin_status_battery} #{E:@catppuccin_status_date_time}"' \
+  'set -g @status_right_main "#{E:@catppuccin_status_application} #{E:@catppuccin_status_date_time}"'
+set -g status-right '#{E:@status_right_main}'
+# continuum autosaves from a script it puts in status-right while tpm loads,
+# which the line above replaces. Put it back. It prints nothing.
+if-shell -F '#{@main_server}' {
+  set -ga status-right '#(~/.tmux/plugins/tmux-continuum/scripts/continuum_save.sh)'
+  # restore once, on the first load of a freshly started main server
+  if-shell '[ $(( $(date +%s) - #{start_time} )) -lt 15 ]' \
+    'run-shell -b "~/.tmux/plugins/tmux-resurrect/scripts/restore.sh"'
+}
 
 # Pane border colors (Catppuccin Mocha)
 set -g pane-border-lines heavy
@@ -112,3 +159,26 @@ set -g pane-active-border-style 'fg=#cba6f7'
 # Inactive pane background tint
 set -g window-style 'fg=#585b70,bg=#11111b'
 set -g window-active-style 'fg=#cdd6f4,bg=#1e1e2e'
+
+# agent-deck configuration
+# agent-deck-tmux-config-version: 4
+# Taken over from the agent-deck installer and trimmed to what the rest of
+# this file lacks. The markers stay so a re-run of its installer sees v4 and
+# leaves the file alone. A newer version would rewrite it and replace the
+# ~/.tmux.conf symlink with a plain file, so install and upgrade agent-deck
+# with --skip-tmux-config (see scripts/requirements.tsv).
+set -g history-limit 50000
+set -g mouse on
+# Shift+Enter and other modified keys reach the agent. Claude Code reads the
+# csi-u form, which needs tmux 3.5+. Ubuntu 24.04 ships 3.4.
+set -s extended-keys on
+if-shell -F '#{>=:#{version},3.5}' 'set -s extended-keys-format csi-u'
+set -as terminal-features 'tmux-256color:extkeys'
+# scrolling up enters copy-mode unless the app wants the mouse itself
+bind-key -n WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'copy-mode -e'"
+bind-key -T copy-mode-vi WheelUpPane send-keys -X scroll-up
+bind-key -T copy-mode-vi WheelDownPane send-keys -X scroll-down
+bind-key -T copy-mode WheelUpPane send-keys -X scroll-up
+bind-key -T copy-mode WheelDownPane send-keys -X scroll-down
+# End agent-deck configuration
+

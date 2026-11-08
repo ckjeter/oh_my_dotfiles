@@ -68,6 +68,12 @@ jobs:
           dupes=$(grep '^# >>> oh_my_dotfiles:' ~/.zshrc | sort | uniq -d)
           test -z "$dupes" || { echo "duplicate managed blocks: $dupes"; exit 1; }
 
+      - name: agent-deck config gets the tmux tables once
+        run: |
+          conf=~/.config/agent-deck/config.toml
+          test "$(grep -c '^\[tmux\]' "$conf")" = 1
+          grep -q 'socket_name = "agent-deck"' "$conf"
+
       - name: doctor runs without crashing
         run: sh ~/.dotfiles/scripts/doctor.sh > /dev/null
 
@@ -107,13 +113,29 @@ jobs:
       - name: Verify tmux config parses and picks the Linux branch
         run: |
           tmux -f ~/.tmux.conf -L ci new-session -d 'sleep 30'
-          if tmux -L ci show-options -gv status-right | grep -q battery; then
+          if tmux -L ci show-options -gv @status_right_main | grep -q battery; then
             echo "battery leaked into a server status bar"
             exit 1
           fi
           test "$(tmux -L ci show-options -gv set-clipboard)" = on
           tmux -L ci list-keys -T copy-mode-vi | grep -q 'y .*copy-selection-and-cancel'
           tmux -L ci kill-server
+
+      # -L servers (agent-deck, lazyagent) load the same file. Only the
+      # default socket may autosave or restore, or they overwrite its saves.
+      - name: Verify only the main tmux server autosaves
+        run: |
+          tmux -f ~/.tmux.conf -L agent-deck new-session -d 'sleep 30'
+          test "$(tmux -L agent-deck show-options -gv @continuum-save-interval)" = 0
+          if tmux -L agent-deck show-options -gv status-right | grep -q continuum_save; then
+            echo "a side server autosaves"
+            exit 1
+          fi
+          tmux -L agent-deck kill-server
+          mkdir -p /tmp/main && tmux -f ~/.tmux.conf -S /tmp/main/default new-session -d 'sleep 30'
+          tmux -S /tmp/main/default show-options -gv status-right | grep -q continuum_save
+          tmux -S /tmp/main/default show-options -gv status-left | grep -q catppuccin_status_session
+          tmux -S /tmp/main/default kill-server
 
       - name: Verify nvim and plain vim both start clean
         run: |

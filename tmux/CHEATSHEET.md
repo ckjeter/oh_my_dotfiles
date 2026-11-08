@@ -100,11 +100,35 @@ Both machines use the same `C-a` prefix on purpose, so muscle memory carries ove
 
 ---
 
+## agent-deck and the other tmux servers
+
+Your own sessions live on the main server (the default socket). agent-deck
+runs every agent on its own server, `tmux -L agent-deck`, and the lazyagent
+dashboard starts one more. All of them load this config. Only the main one
+restores and autosaves with resurrect/continuum.
+
+| Where | Status left | After a reboot |
+|-------|-------------|----------------|
+| main server | session name | opening tmux restores sessions, windows and layout |
+| agent-deck server | notification bar while an agent waits (`prefix + 1-6` jumps to it), empty otherwise | `agent-deck fleet recover --yes` resumes each conversation. Extra windows and panes in an agent session are not kept |
+
+- `tmux -L agent-deck ls` lists the agent sessions. Plain `tmux ls` run
+  inside an agent pane also talks to that server, because `$TMUX` points there
+- Install or upgrade agent-deck with `--skip-tmux-config`. Its installer
+  otherwise edits `~/.tmux.conf`, which is a symlink into this repo
+- `agent-deck/install.sh` keeps the `[tmux]` part of
+  `~/.config/agent-deck/config.toml` in line with `agent-deck/tmux.toml`
+- agent-deck needs tmux 3.5+. After upgrading tmux, restart any server that is
+  still running the old version. A client only attaches to its own version
+
+---
+
 ## Misc
 
 | Key | Action |
 |-----|--------|
 | `prefix + Tab` | fzf window switcher, MRU-ordered (see below) |
+| `prefix + a` | floating shell popup in the current pane's directory, `exit` / `C-d` closes it |
 | `prefix + r` | `refresh-client` (redraw) |
 
 ### prefix + Tab window switcher
