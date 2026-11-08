@@ -187,12 +187,64 @@ reltime() {
   fi
 }
 
+preview_agentdeck() {
+  win="$1"; sess="${win%%:*}"
+  header=""
+  if command -v agent-deck > /dev/null && command -v jq > /dev/null; then
+    # one list call, matched on the tmux session so duplicate titles are fine.
+    # jq writes the whole header: a shell read on TAB would drop empty fields
+    header="$(agent-deck list --json 2>/dev/null | jq -r --arg s "$sess" --arg home "$HOME" '
+      def rel: if . < 60 then "\(.)s" elif . < 3600 then "\(. / 60 | floor)m"
+        elif . < 86400 then "\(. / 3600 | floor)h" else "\(. / 86400 | floor)d" end;
+      first(.[] | select(.tmux_session == $s)) as $x
+      | ({running: "● running", waiting: "◐ waiting", idle: "○ idle",
+          error: "✕ error"}[$x.status] // $x.status) as $st
+      | (($x.last_activity_at // "") | sub("\\.[0-9]+"; "")
+          | try (now - fromdateiso8601 | floor | "  active \(rel) ago") catch "") as $age
+      | "\($x.title)  ·  \($x.group)\n\($x.tool)  \($st)\($age)\n"
+        + ($x.path | sub("^" + $home; "~"))
+        + (if ($x.model // "") != "" then "  ·  \($x.model)" else "" end)' 2>/dev/null)"
+  fi
+  [ -n "$header" ] || header="$(tmux show -qv -t "$sess" @agentdeck_display_name)  ·  $(tmux show -qv -t "$sess" @agentdeck_group_path)
+agent-deck info unavailable
+"
+  printf '%s\n' "$header"
+  printf '%*s\n' "${FZF_PREVIEW_COLUMNS:-80}" '' | tr ' ' '-'
+
+  # the conversation: the agent pane's screen with its colors, trailing blank
+  # lines dropped, and only as many of the last lines as fit once fzf wraps
+  # them (fzf opens a preview at the top). CJK counts as two columns. OSC
+  # sequences (hyperlinks) are removed, fzf would print them as text
+  tmux capture-pane -p -e -t "$win" 2>/dev/null | awk \
+      -v cols="${FZF_PREVIEW_COLUMNS:-80}" -v avail="$((${FZF_PREVIEW_LINES:-40} - 4))" '
+    {
+      gsub(/\033\][^\007\033]*(\007|\033\\)/, ""); sub(/[ \t]+$/, "")
+      line[NR] = $0; t = $0; gsub(/\033\[[0-9;:]*m/, "", t); sub(/[ \t]+$/, "", t)
+      w = length(t) + gsub(/[ᄀ-ᇿ⺀-꓏가-힣豈-﫿︰-﹯＀-｠￠-￦]/, "&", t)
+      rows[NR] = (w > 0 ? int((w - 1) / cols) + 1 : 1)
+      if (t != "") last = NR
+    }
+    END {
+      first = last + 1; used = 0
+      while (first > 1 && used + rows[first - 1] <= avail) { first--; used += rows[first] }
+      for (i = first; i <= last; i++) print line[i]
+    }'
+}
+
 cmd_preview() {
   win="${1:-}"
   [ -n "$win" ] || return 0
   now="$(date +%s)"
   info="$(tmux list-panes -t "$win" -F "#{window_name}${TAB}#{pane_index}${TAB}#{pane_active}${TAB}#{pane_title}${TAB}#{pane_current_command}${TAB}#{pane_current_path}${TAB}#{pane_activity}" 2>/dev/null)"
   [ -n "$info" ] || { echo "window is gone"; return 0; }
+
+  # an agent-deck agent window gets its own view: session info, then the
+  # conversation as it stands. Extra windows in that session fall through.
+  if [ "$(printf '%s\n' "$info" | head -1 | cut -f1)" = bash ] \
+    && [ -n "$(tmux show -qv -t "${win%%:*}" @agentdeck_display_name 2>/dev/null)" ]; then
+    preview_agentdeck "$win"
+    return 0
+  fi
 
   # awk, not a shell read loop: TAB is IFS whitespace, so read collapses
   # empty fields (an empty pane title shifts every later column)
