@@ -160,7 +160,7 @@ let g:fzf_default_command = 'Hidden Files'
 "coc----------------------------------
 if s:has_node
   set completeopt=menuone,noinsert,noselect
-  autocmd CursorHold * silent call CocActionAsync('highlight')
+  autocmd CursorHold * if exists('*CocActionAsync') | silent call CocActionAsync('highlight') | endif
 endif
 
 "vim-bookmark-------------------------

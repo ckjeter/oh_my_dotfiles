@@ -53,7 +53,15 @@ row "git identity" "$(git config --global --get user.email || echo 'not set, com
 row "commit template" "$(git config --global --get commit.template || echo 'not set')"
 
 section "features that depend on this machine"
-have node && row "coc + copilot" "on, node present" || row "coc + copilot" "off, no node"
+for plugin in coc.nvim copilot.vim; do
+  if ! have node; then
+    row "$plugin" "off, no node"
+  elif [ ! -f "$HOME/.config/nvim/plugged/$plugin/plugin/${plugin%.*}.vim" ]; then
+    row "$plugin" "off, plugin missing, run :PlugInstall in nvim"
+  else
+    row "$plugin" "installed, node present"
+  fi
+done
 { have cc || have gcc; } && row "treesitter parsers" "on, compiler present" \
   || row "treesitter parsers" "off, no C compiler"
 if [ "$(os_family)" = macos ]; then
