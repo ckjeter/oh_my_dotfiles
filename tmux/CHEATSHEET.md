@@ -95,8 +95,9 @@ Both machines use the same `C-a` prefix on purpose, so muscle memory carries ove
 | `F12` | Mute the outer session — every key, including a bare prefix, goes to the inner one. Status bar dims |
 | `F12` again | Take control back |
 
-> The remote status bar carries a yellow hostname badge on the left, so the
-> layer you are typing into is always visible.
+> A server names itself in a pill at the right end of its bar, in its own
+> color (`hosts/<hostname>.tmux`). No pill means the local machine. In a
+> nested session the server's bar sits above the laptop's.
 
 ---
 
@@ -110,7 +111,7 @@ restores and autosaves with resurrect/continuum.
 | Where | Status left | After a reboot |
 |-------|-------------|----------------|
 | main server | session name | opening tmux restores sessions, windows and layout |
-| agent-deck server | notification bar while an agent waits (`prefix + 1-6` jumps to it), empty otherwise | `agent-deck fleet recover --yes` resumes each conversation. Extra windows and panes in an agent session are not kept |
+| agent-deck server | notification bar while an agent waits (`prefix + 1-6` jumps to it), then the agent-deck group in the session-name pill. Windows show the agent-deck session title | `agent-deck fleet recover --yes` resumes each conversation. Extra windows and panes in an agent session are not kept |
 
 - `tmux -L agent-deck ls` lists the agent sessions. Plain `tmux ls` run
   inside an agent pane also talks to that server, because `$TMUX` points there

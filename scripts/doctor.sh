@@ -57,9 +57,14 @@ have node && row "coc + copilot" "on, node present" || row "coc + copilot" "off,
 { have cc || have gcc; } && row "treesitter parsers" "on, compiler present" \
   || row "treesitter parsers" "off, no C compiler"
 if [ "$(os_family)" = macos ]; then
-  row "tmux status bar" "battery segment"
+  row "tmux battery" "on"
 else
-  row "tmux status bar" "hostname badge, no battery"
+  row "tmux battery" "off, no battery here"
+fi
+if [ -f "$DOTFILES/hosts/$(hostname -s).tmux" ]; then
+  row "tmux host pill" "on, hosts/$(hostname -s).tmux"
+else
+  row "tmux host pill" "off, treated as the local machine. Add hosts/$(hostname -s).tmux on a server"
 fi
 if [ -n "${TMUX:-}" ]; then
   row "nvim clipboard" "via tmux, forwarded by set-clipboard"
