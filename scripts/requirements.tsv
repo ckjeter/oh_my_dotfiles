@@ -12,5 +12,7 @@ starship	required	draws the shell prompt. Without it zsh falls back to a bare pr
 fzf	required	prefix + Tab window switching in tmux, the git coi alias, and Ctrl-P in nvim	brew install fzf	sudo apt install -y fzf
 rg	optional	backs the Leader-p project search in nvim. Without it that one mapping fails	brew install ripgrep	sudo apt install -y ripgrep
 jq	optional	Claude Code statusline rendering, and agent session history in the tmux Tab switcher preview	brew install jq	sudo apt install -y jq
-node	optional	runtime for coc.nvim and copilot. Without it both stay unloaded and the rest of nvim is unaffected	brew install node	sudo apt install -y nodejs npm
+node	optional	runtime for copilot.vim in nvim. Without it copilot stays unloaded and the rest of nvim is unaffected	brew install node	sudo apt install -y nodejs npm
 cc	optional	C compiler for building treesitter parsers. Without it markdown highlighting falls back to the parsers nvim bundles	xcode-select --install	sudo apt install -y build-essential
+go	optional	Go toolchain. nvim starts gopls only when both this and gopls are on PATH, so without it Go files just have no LSP	brew install go	sudo apt install -y golang-go
+gopls	optional	Go language server behind gd/gr/K in nvim. Use a release supporting your project Go version and a supported runtime Go toolchain. Needs $HOME/.local/bin on PATH. See hosts/<host>.md for this machine's version	GOBIN="$HOME/.local/bin" go install golang.org/x/tools/gopls@latest	GOBIN="$HOME/.local/bin" go install golang.org/x/tools/gopls@latest

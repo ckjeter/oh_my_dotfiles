@@ -48,7 +48,6 @@ Personal portable dev environment. Managed as a side project.
 | scripts/ | shared install helpers, `doctor.sh`, `requirements.tsv`, terminfo push, tmux session ordering |
 | starship/ | starship.toml |
 | ghostty/ | ghostty terminal config |
-| scripts/ | tmux session ordering |
 
 ## Git Conventions
 
