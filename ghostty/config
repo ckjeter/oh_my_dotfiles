@@ -48,7 +48,7 @@
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 
-theme = catppuccin-macchiato
+theme = catppuccin-macchiato.conf
 
 font-feature = -calt, -liga, -dlig
 
