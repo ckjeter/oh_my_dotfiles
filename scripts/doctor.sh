@@ -77,6 +77,30 @@ if have lazyagent; then
 else
   row "tab-switcher history" "off, no lazyagent (optional)"
 fi
+if have agent-deck; then
+  conf="${XDG_CONFIG_HOME:-$HOME/.config}/agent-deck/config.toml"
+  if grep -qF 'socket_name = "agent-deck"' "$conf" 2> /dev/null; then
+    row "agent-deck config" "own tmux server (socket agent-deck)"
+  else
+    row "agent-deck config" "shares the main tmux server, run sh $DOTFILES/agent-deck/install.sh"
+  fi
+  tv=$(tmux -V 2> /dev/null | sed 's/^tmux //')
+  if printf '%s\n' "$tv" | awk -F. '{exit !($1 > 3 || ($1 == 3 && $2 + 0 >= 5))}'; then
+    row "agent-deck tmux" "$tv"
+  elif [ "$(os_family)" = macos ]; then
+    row "agent-deck tmux" "${tv:-none} is too old, needs 3.5+: brew upgrade tmux"
+  else
+    row "agent-deck tmux" "${tv:-none} is too old, needs 3.5+. Build it:"
+    echo "    sudo apt install -y libevent-dev libncurses-dev bison && curl -fsSL https://github.com/tmux/tmux/releases/download/3.8/tmux-3.8.tar.gz | tar -xz -C /tmp && (cd /tmp/tmux-3.8 && ./configure && make && sudo make install)"
+  fi
+  # a client only attaches to a server of its own version
+  sv=$(tmux display -p '#{version}' 2> /dev/null || true)
+  if [ -n "$sv" ] && [ -n "$tv" ] && [ "$sv" != "$tv" ]; then
+    row "tmux server" "$sv still running under a $tv client, restart it before attaching"
+  fi
+else
+  row "agent-deck" "off, not installed (optional)"
+fi
 
 section "~/.zshrc"
 rc="$HOME/.zshrc"

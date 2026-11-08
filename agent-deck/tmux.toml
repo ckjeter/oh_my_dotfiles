@@ -1,0 +1,12 @@
+# What tmux/tmux.symlink expects from agent-deck. agent-deck/install.sh appends
+# it to ~/.config/agent-deck/config.toml. agent-deck rewrites that file and
+# drops these comments, which is fine.
+[tmux]
+  # its own server, apart from the main one where resurrect and continuum run
+  socket_name = "agent-deck"
+
+# Keep the notification bar (status-left). Put the tracked status-right and
+# bar color back on each session, which agent-deck otherwise replaces.
+[tmux.options]
+  status-right = "#{E:@status_right_main}"
+  status-style = "bg=#181825,fg=#cdd6f4"
