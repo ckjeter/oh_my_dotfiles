@@ -214,13 +214,19 @@ agent-deck info unavailable
   # the conversation: the agent pane's screen with its colors, trailing blank
   # lines dropped, and only as many of the last lines as fit once fzf wraps
   # them (fzf opens a preview at the top). CJK counts as two columns. OSC
-  # sequences (hyperlinks) are removed, fzf would print them as text
-  tmux capture-pane -p -e -t "$win" 2>/dev/null | awk \
+  # sequences (hyperlinks) are removed, fzf would print them as text.
+  # Widths are counted on UTF-8 bytes in the C locale, because macOS awk is
+  # not UTF-8 aware and aborts on multibyte ranges. A wide character is a
+  # lead sequence in U+1100-11FF, U+2E80-A4CF, U+AC00-D7A3, U+F900-FAFF,
+  # U+FE30-FE6F, U+FF00-FF60 or U+FFE0-FFE6, and characters are the bytes
+  # that are not continuation bytes
+  tmux capture-pane -p -e -t "$win" 2>/dev/null | LC_ALL=C awk \
       -v cols="${FZF_PREVIEW_COLUMNS:-80}" -v avail="$((${FZF_PREVIEW_LINES:-40} - 4))" '
     {
       gsub(/\033\][^\007\033]*(\007|\033\\)/, ""); sub(/[ \t]+$/, "")
       line[NR] = $0; t = $0; gsub(/\033\[[0-9;:]*m/, "", t); sub(/[ \t]+$/, "", t)
-      w = length(t) + gsub(/[ᄀ-ᇿ⺀-꓏가-힣豈-﫿︰-﹯＀-｠￠-￦]/, "&", t)
+      wide = gsub(/\341[\204-\207]|\342[\272-\277]|[\343-\351]|\352[\200-\223\260-\277]|[\353\354]|\355[\200-\236]|\357[\244-\253\274\275]|\357\270[\260-\277]|\357\271[\200-\257]|\357\277[\240-\246]/, "&", t)
+      w = length(t) - gsub(/[\200-\277]/, "", t) + wide
       rows[NR] = (w > 0 ? int((w - 1) / cols) + 1 : 1)
       if (t != "") last = NR
     }
