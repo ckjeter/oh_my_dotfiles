@@ -47,7 +47,7 @@ if !empty($SSH_TTY) && empty($TMUX)
 endif
 
 "plugins------------------------------
-" coc and copilot are node processes; a bare server may not have node
+" copilot is a node process; a bare server may not have node
 let s:has_node = executable('node')
 
 call plug#begin('~/.config/nvim/plugged')
@@ -75,7 +75,6 @@ Plug 'nvim-lualine/lualine.nvim'
 Plug 'akinsho/bufferline.nvim'
 
 if s:has_node
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'github/copilot.vim'
 endif
 
@@ -93,7 +92,6 @@ if ok then
   catppuccin.setup({
     flavour = 'mocha',
     integrations = {
-      coc_nvim = true,
       gitgutter = true,
       nerdtree = true,
       lualine = true,
@@ -135,7 +133,7 @@ let g:webdevicons_enable = 1
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
    \ quit | endif
 "autocmd VimEnter * NERDTree | wincmd p
-autocmd BufWinEnter * silent NERDTreeMirror
+autocmd BufWinEnter * if &buftype == '' | silent NERDTreeMirror | endif
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 let NERDTreeShowHidden=1
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
@@ -157,11 +155,46 @@ let g:NERDTreeGitStatusConcealBrackets = 1
 "fzf----------------------------------
 let g:fzf_default_command = 'Hidden Files'
 
-"coc----------------------------------
-if s:has_node
-  set completeopt=menuone,noinsert,noselect
-  autocmd CursorHold * silent call CocActionAsync('highlight')
-endif
+"lsp----------------------------------
+" Native LSP, no plugin: nvim 0.11+ ships vim.lsp.config / vim.lsp.enable.
+" Go only, and only when go and gopls are both on PATH.
+set completeopt=menuone,noinsert,noselect
+
+lua << EOF
+local modern_lsp = vim.lsp ~= nil and vim.lsp.config ~= nil and type(vim.lsp.enable) == 'function'
+
+if modern_lsp then
+  if vim.fn.executable('go') == 1 and vim.fn.executable('gopls') == 1 then
+    vim.lsp.config('gopls', {
+      cmd = { 'gopls' },
+      filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
+      -- go.work first, so a multi-module workspace resolves across its modules
+      root_markers = { 'go.work', 'go.mod', '.git' },
+    })
+    vim.lsp.enable('gopls')
+  end
+
+  vim.api.nvim_create_autocmd('LspAttach', {
+    group = vim.api.nvim_create_augroup('dotfiles_lsp_attach', { clear = true }),
+    callback = function(args)
+      local client = vim.lsp.get_client_by_id(args.data.client_id)
+      if not client or client.name ~= 'gopls' then return end
+      -- buffer-local, so gd and K keep their built-in meaning elsewhere
+      local opts = { buffer = args.buf, silent = true }
+      vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+      vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+      vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+      vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
+      vim.keymap.set('n', '[g', function()
+        vim.diagnostic.jump({ count = -1, float = true })
+      end, opts)
+      vim.keymap.set('n', ']g', function()
+        vim.diagnostic.jump({ count = 1, float = true })
+      end, opts)
+    end,
+  })
+end
+EOF
 
 "vim-bookmark-------------------------
 let g:bookmark_save_per_working_dir = 1

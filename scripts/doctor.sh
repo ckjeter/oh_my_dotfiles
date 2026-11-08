@@ -53,7 +53,31 @@ row "git identity" "$(git config --global --get user.email || echo 'not set, com
 row "commit template" "$(git config --global --get commit.template || echo 'not set')"
 
 section "features that depend on this machine"
-have node && row "coc + copilot" "on, node present" || row "coc + copilot" "off, no node"
+plugin=copilot.vim
+if ! have node; then
+  row "$plugin" "off, no node"
+elif [ ! -f "$HOME/.config/nvim/plugged/$plugin/plugin/copilot.vim" ]; then
+  row "$plugin" "off, plugin missing; run :PlugInstall in nvim"
+else
+  row "$plugin" "installed, node present (runtime not checked)"
+fi
+# Go LSP in nvim is native vim.lsp.config: needs nvim 0.11+ plus go and gopls.
+# Only prerequisites are checked here. Whether gopls attaches is a runtime
+# question, and this script does not start an editor to find out.
+# GOTOOLCHAIN=local keeps the version probe from triggering a toolchain
+# download when doctor runs inside a module that asks for a newer Go.
+row "go (launcher)" "$(GOTOOLCHAIN=local go version 2> /dev/null || echo 'missing, no Go LSP in nvim')"
+row "gopls" "$({ gopls version 2> /dev/null || echo 'missing, see scripts/requirements.tsv'; } | head -1)"
+nvim_ver=$(nvim --version 2> /dev/null | sed -n '1s/^NVIM v*//p')
+if [ -z "$nvim_ver" ]; then
+  row "go lsp" "off, no nvim"
+elif ! printf '%s\n' "$nvim_ver" | awk -F'[.-]' '{exit !($1 > 0 || $2 >= 11)}'; then
+  row "go lsp" "off, nvim $nvim_ver predates vim.lsp.config (needs 0.11+)"
+elif ! have go || ! have gopls; then
+  row "go lsp" "off, needs both go and gopls on PATH"
+else
+  row "go lsp" "prerequisites met, open a .go file and run :checkhealth vim.lsp to confirm"
+fi
 { have cc || have gcc; } && row "treesitter parsers" "on, compiler present" \
   || row "treesitter parsers" "off, no C compiler"
 if [ "$(os_family)" = macos ]; then

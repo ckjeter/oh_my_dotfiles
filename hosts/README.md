@@ -34,7 +34,7 @@ config into the shared file.
 Remote dev box, reached over SSH from the laptop.
 
 - docker: runs throwaway containers for testing installers
-- no node, no build-essential: coc, copilot, and treesitter parsers stay off
+- no node, no build-essential: copilot and treesitter parsers stay off
   here on purpose, this box is for editing and shell work
 ```
 

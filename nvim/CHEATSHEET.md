@@ -48,27 +48,51 @@ Unified navigation across Neovim splits and tmux panes — no prefix needed:
 
 ---
 
-## Code Navigation (coc.nvim)
+## Code Navigation (native LSP)
+
+Neovim's built-in LSP client, no plugin. Requires Neovim 0.11 or newer, which
+ships `vim.lsp.config` / `vim.lsp.enable`. Go is the only language wired up so
+far, and only when both `go` and `gopls` are on `PATH`. On a machine without
+them nothing is configured and these keys keep their built-in vim meaning.
 
 | Key | Action |
 |-----|--------|
-| `gd` | Go to definition |
-| `gr` | Go to references |
+| `gd` | Go to definition (across files in the workspace) |
+| `gr` | List references |
 | `K` | Hover documentation / type info |
 | `\rn` | Rename symbol |
-| `[g` / `]g` | Previous / next diagnostic |
+| `[g` / `]g` | Previous / next diagnostic, with the float |
+| `<C-o>` | Jump back to where you came from |
+| `<C-i>` | Jump forward again |
 
-> Diagnostic float appears automatically after 300ms when cursor rests on an error. Run `:CocList diagnostics` to see all.
+> LSP mappings are buffer-local and set when gopls attaches. `<C-o>` and
+> `<C-i>` are built-in jump-list navigation and work in every buffer.
 
-### Installed Extensions
+### Go
 
-| Extension | Languages |
-|-----------|-----------|
-| `coc-tsserver` | JavaScript, TypeScript, JSX, TSX |
-| `coc-eslint` | JS/TS linting |
-| `coc-clangd` | C, C++ (requires `brew install llvm`) |
+`gopls` starts for `go`, `gomod`, `gowork` and `gotmpl` files. The workspace
+root is the first of `go.work`, `go.mod`, `.git` found above the file, so a
+multi-module repo with a `go.work` resolves definitions across all of its
+modules rather than stopping at the module the file lives in.
 
-Install new: `:CocInstall coc-<name>` — e.g. `coc-pyright` (Python), `coc-java`, `coc-go`
+Nothing is formatted on save, and no completion plugin is installed. Use
+`<C-x><C-o>` for omni completion, `:lua vim.diagnostic.setloclist()` for every
+diagnostic in the buffer, and `:checkhealth vim.lsp` to see whether a server
+attached.
+
+Install requirements: `go` from brew or apt, and `gopls` via
+`GOBIN="$HOME/.local/bin" go install golang.org/x/tools/gopls@latest` with
+`$HOME/.local/bin` on `PATH`. gopls officially supports the latest two Go
+toolchains at runtime, while projects can declare an older language version.
+With `GOTOOLCHAIN=auto`, Go downloads a newer toolchain when required by
+`go.mod` or `go.work`. Building gopls with newer Go does not itself upgrade
+the `go` command used to analyze a project. See the
+[gopls version policy](https://go.dev/gopls/#supported-go-versions).
+The installed version and verification results live in `hosts/<host>.md`.
+Run `sh scripts/doctor.sh` to check this machine.
+
+Other languages: add another `vim.lsp.config` block in the `lsp` section of
+`nvim/nvim.symlink`.
 
 ---
 
@@ -104,7 +128,7 @@ Install new: `:CocInstall coc-<name>` — e.g. `coc-pyright` (Python), `coc-java
 | `zR` / `zM` | Open all / close all folds |
 | `ge` | Follow link under cursor |
 
-> Spell check, concealing, and header folding are auto-enabled in `.md` files. Wavy underlines are spell check, not coc diagnostics.
+> Spell check, concealing, and header folding are auto-enabled in `.md` files. Wavy underlines are spell check, not LSP diagnostics.
 
 | Key | Action |
 |-----|--------|

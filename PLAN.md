@@ -36,7 +36,7 @@ Needs a careful audit of the current `~/.zshrc` before implementing.
 
 - [ ] Re-bootstrap `kuan-dev-1` from a clean slate to prove the git path end to end
 - [ ] Decide whether `node` and `build-essential` belong on the dev box, which
-      would turn coc, copilot, and treesitter parsers back on there
+      would turn copilot and treesitter parsers back on there
 - [ ] Write `hosts/kuan-dev-1.md` once that box settles, recording what it has
       beyond the shared baseline and why
 

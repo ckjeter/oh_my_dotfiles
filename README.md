@@ -83,9 +83,10 @@ sh ~/.dotfiles/scripts/doctor.sh
 ```
 
 It reports tools and versions, which configs are wired up, which features are
-on or off on this box (coc needs `node`, treesitter needs a compiler), how the
-clipboard is routed, whether `$TERM` has terminfo, and any lines an older
-install left outside the managed blocks.
+on or off on this box (Copilot needs `node`, the Go LSP needs `go` and
+`gopls`, treesitter needs a compiler), how the clipboard is routed, whether
+`$TERM` has terminfo, and any lines an older install left outside the managed
+blocks.
 
 `~/.gitconfig` is treated the same way: it stays a local file and gets an
 `include.path` pointing at `git/gitconfig.shared`, so the repo carries the
@@ -102,9 +103,15 @@ git config --global user.email 'you@example.com'
 
 The configs detect the platform when they load, so one tracked file per tool
 covers both machines: battery drops out of the tmux status bar, a hostname
-badge appears instead, yanks reach the laptop clipboard over OSC 52, and
-coc/copilot load only when `node` is present. Plain `vim` (built without
-`+lua`) stops before the plugin section instead of erroring.
+badge appears instead, yanks reach the laptop clipboard over OSC 52. Copilot
+loads only when `node` is present, and gopls only when `go` and `gopls` are.
+Plain `vim` (built without `+lua`) stops before the plugin section instead of
+erroring.
+
+Go navigation uses Neovim 0.11+ and `gopls`: `gd` jumps to a definition,
+`gr` lists references, and `K` shows documentation. See the
+[navigation cheatsheet](nvim/CHEATSHEET.md#code-navigation-native-lsp) for
+setup and workspace requirements.
 
 Neovim comes from the upstream tarball rather than apt, whose 0.9 is too old
 for the OSC 52 clipboard.
