@@ -51,7 +51,7 @@ cmd_record() {
 # Emits: <target> TAB <display line>, MRU first. One tmux call, one awk pass.
 cmd_list() {
   cur="$(tmux display-message -p '#{session_name}:#{window_index}' 2>/dev/null || true)"
-  tmux list-panes -a -F "#{session_name}:#{window_index}${TAB}#{window_name}${TAB}#{pane_active}${TAB}#{pane_title}${TAB}#{pane_current_command}${TAB}#{pane_current_path}${TAB}#{pane_activity}" 2>/dev/null \
+  tmux list-panes -a -F "#{session_name}:#{window_index}${TAB}#{window_name}${TAB}#{pane_active}${TAB}#{pane_title}${TAB}#{pane_current_command}${TAB}#{pane_current_path}${TAB}#{pane_activity}${TAB}#{@agentdeck_group_path}${TAB}#{@agentdeck_display_name}" 2>/dev/null \
   | awk -F "$TAB" \
       -v now="$(date +%s)" -v cur="$cur" -v mark="$AGENT_MARK" \
       -v cmds="$AGENT_CMDS" -v icons="$AGENT_ICONS" -v defic="$AGENT_ICON_DEFAULT" \
@@ -82,7 +82,13 @@ cmd_list() {
     }
     {
       win = $1; name = $2; active = $3; title = $4; cmd = $5; path = $6; act = $7
-      if (!(win in seen)) { seen[win] = 1; order[++m] = win; wname[win] = name }
+      if (!(win in seen)) {
+        seen[win] = 1; order[++m] = win; wname[win] = name; label[win] = win
+        # agent-deck sessions: group in place of the session name, title in
+        # place of "bash", the same names its status bar shows
+        if ($8 != "") label[win] = $8
+        if ($9 != "" && name == "bash") wname[win] = $9
+      }
       task = ""; kind = ""
       if (index(title, mark) == 1)  { task = substr(title, length(mark) + 1); kind = "claude" }
       else if (cmd in agentcmd)     { task = "running " cmd; kind = cmd }
@@ -119,7 +125,7 @@ cmd_list() {
         ab = ""
         if (win in aicons)
           ab = sprintf("%s %s", aicons[win], atask[win])
-        line = sprintf("%-16s ", clip(win, 16))
+        line = sprintf("%-16s ", clip(label[win], 16))
         line = line CYAN sprintf("%-12s", clip(wname[win], 12)) RESET " "
         line = line DIM sprintf("%4s", age) RESET "  "
         line = line (dirty > 0 ? YELLOW : GREEN) sprintf("%-14s", git) RESET " "
