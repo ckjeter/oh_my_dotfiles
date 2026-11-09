@@ -25,6 +25,8 @@
 [mergetool]
 	prompt = false
 [push]
-	default = upstream
+	default = simple
+[branch]
+	autoSetupMerge = simple
 [hub]
 	protocol = https
