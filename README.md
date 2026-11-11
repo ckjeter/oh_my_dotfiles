@@ -17,6 +17,7 @@ If these configs look bad, I'm just not nerdy enough yet.
 | Git | `git/` | Aliases and shared settings, included from a local `~/.gitconfig` |
 | Ghostty | `ghostty/` | Terminal config, laptop only |
 | Claude Code | `claude/` | Status line script, wired into a machine-local `~/.claude/settings.json` |
+| Pi | `pi/` | Custom footer extension showing directory, branch, model, context, tokens, and cost |
 
 ---
 
@@ -61,6 +62,7 @@ So the boundary is explicit:
 | Path | Owner |
 |------|-------|
 | `~/.tmux.conf`, `~/.vimrc`, `~/.config/nvim/init.vim`, `~/.config/starship.toml` | Symlinks into the repo. Fully owned |
+| `~/.pi/agent/extensions/statusline.ts` | Symlink into the repo. Pi settings and credentials stay machine-local |
 | `~/.gitconfig` | The machine. The repo only adds an `include.path` to `git/gitconfig.shared` |
 | `~/.zshrc` | The machine. The repo owns only what sits inside `# >>> oh_my_dotfiles:<name> >>>` blocks |
 | everything else | The machine |

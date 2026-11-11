@@ -39,7 +39,7 @@ jobs:
 
       - name: Verify symlinks
         run: |
-          for f in ~/.tmux.conf ~/.vimrc ~/.config/nvim/init.vim ~/.config/starship.toml; do
+          for f in ~/.tmux.conf ~/.vimrc ~/.config/nvim/init.vim ~/.config/starship.toml ~/.pi/agent/extensions/statusline.ts; do
             test -L "$f" || { echo "$f symlink missing"; exit 1; }
           done
 

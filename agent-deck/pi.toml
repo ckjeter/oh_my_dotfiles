@@ -1,0 +1,3 @@
+# Match the custom footer installed by pi/install.sh without replacing Pi defaults.
+[tools.pi]
+prompt_patterns_extra = ['re:(?m)^(?:~|/)[^\n|]+ \| [^\n|]+ \| ctx:(?:\?|\d+%)(?: \||$)']

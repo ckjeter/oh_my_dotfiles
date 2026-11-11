@@ -15,4 +15,10 @@ elif ! grep -qF 'socket_name = "agent-deck"' "$conf" \
   || ! grep -qF 'status-right = "#{E:@status_right_main}"' "$conf"; then
   echo "$conf has its own [tmux] section that differs from $DOTFILES/agent-deck/tmux.toml, merge by hand"
 fi
+if ! grep -q '^[[:space:]]*\[tools\.pi\]' "$conf"; then
+  { echo; cat "$DOTFILES/agent-deck/pi.toml"; } >> "$conf"
+  echo "agent-deck Pi footer detection -> $conf"
+elif ! grep -qF 'ctx:(?:' "$conf"; then
+  echo "$conf has its own [tools.pi] section, merge $DOTFILES/agent-deck/pi.toml by hand"
+fi
 have agent-deck || echo "agent-deck is not installed, its config is ready for when it is"
