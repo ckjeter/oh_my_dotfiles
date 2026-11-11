@@ -37,7 +37,8 @@ for pair in \
   "$HOME/.tmux.conf:$DOTFILES/tmux/tmux.symlink" \
   "$HOME/.vimrc:$DOTFILES/nvim/nvim.symlink" \
   "$HOME/.config/nvim/init.vim:$HOME/.vimrc" \
-  "$HOME/.config/starship.toml:$DOTFILES/starship/starship.toml.symlink"; do
+  "$HOME/.config/starship.toml:$DOTFILES/starship/starship.toml.symlink" \
+  "$HOME/.pi/agent/extensions/statusline.ts:$DOTFILES/pi/statusline.ts"; do
   dst=${pair%%:*}
   want=${pair#*:}
   if [ ! -e "$dst" ]; then
