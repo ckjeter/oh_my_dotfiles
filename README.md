@@ -2,7 +2,13 @@
 
 My personal dev environment, version controlled so I stop reconfiguring everything from scratch every time I get a new machine.
 
-If these configs look bad, I'm just not nerdy enough yet.
+**TL;DR** Hand this repo to your agent and let it set the machine up:
+
+```
+Set up https://github.com/ckjeter/oh_my_dotfiles on this machine. Follow its AGENTS.md.
+```
+
+It clones the repo, runs the install script, and tells you which tools are missing before installing anything.
 
 ---
 

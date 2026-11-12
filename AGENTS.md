@@ -6,6 +6,18 @@ has never heard of, while leaving a trail that survives the conversation.
 
 Conventions, branching, and the testing strategy live in `CLAUDE.md`.
 
+## Setting up a machine that does not have this repo yet
+
+```sh
+git clone https://github.com/ckjeter/oh_my_dotfiles ~/.dotfiles
+sh ~/.dotfiles/install.sh
+```
+
+If `~/.dotfiles` already exists, stop and ask before touching it. The install
+links configs and prints the tools that are missing. It installs none of them.
+Show the operator that list and ask which ones they want before running any
+install command.
+
 ## Start here on an unfamiliar machine
 
 ```sh
