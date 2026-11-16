@@ -15,3 +15,4 @@ rg	optional	backs the Leader-p project search in nvim. Without it that one mappi
 jq	optional	Claude Code statusline rendering, and agent session history in the tmux Tab switcher preview	brew install jq	sudo apt install -y jq
 node	optional	runtime for coc.nvim and copilot. Without it both stay unloaded and the rest of nvim is unaffected	brew install node	sudo apt install -y nodejs npm
 cc	optional	C compiler for building treesitter parsers. Without it markdown highlighting falls back to the parsers nvim bundles	xcode-select --install	sudo apt install -y build-essential
+rclone	optional	daily encrypted backup of agent session data in backup/. The crypt remote is created by hand, see backup/README.md	brew install rclone	sudo apt install -y rclone
