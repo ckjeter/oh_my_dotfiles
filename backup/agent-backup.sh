@@ -13,7 +13,19 @@ set -u
 
 REMOTE="${AGENT_BACKUP_REMOTE:-agentbak:}"
 name="${REMOTE%:}"
-dest="$REMOTE$(hostname -s)"
+# macOS renumbers its local hostname (Name-2, Name-3, ...) whenever it sees a
+# name clash on the network, which would start a new backup folder each time.
+# The computer name does not drift.
+machine_name() {
+  if [ -n "${AGENT_BACKUP_NAME:-}" ]; then
+    printf '%s\n' "$AGENT_BACKUP_NAME"
+  elif command -v scutil > /dev/null 2>&1; then
+    scutil --get ComputerName | tr ' ' '-' | LC_ALL=C tr -cd 'A-Za-z0-9-'
+  else
+    hostname -s
+  fi
+}
+dest="$REMOTE$(machine_name)"
 stage="${XDG_CACHE_HOME:-$HOME/.cache}/agent-backup"
 fail=0
 dry=""

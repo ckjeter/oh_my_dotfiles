@@ -16,6 +16,9 @@ depends on the raw transcripts.
 
 `rclone copy`, never `sync`. A file deleted locally stays in the backup.
 
+The folder is named after the machine: `hostname -s` on Linux, the computer
+name on macOS. Set `AGENT_BACKUP_NAME` to override it.
+
 ## One-time setup per machine
 
 The script refuses to run unless its remote is an rclone `crypt` remote. Create
@@ -55,7 +58,7 @@ tail ~/Library/Logs/agent-backup.log                # macOS
 ## Restore
 
 ```
-rclone copy agentbak:<hostname>/claude/projects ./restored
+rclone copy agentbak:<machine>/claude/projects ./restored
 ```
 
 On a new machine, recreate the drive remote and the `agentbak` crypt remote
