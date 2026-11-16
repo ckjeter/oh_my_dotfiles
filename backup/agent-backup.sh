@@ -19,8 +19,8 @@ name="${REMOTE%:}"
 machine_name() {
   if [ -n "${AGENT_BACKUP_NAME:-}" ]; then
     printf '%s\n' "$AGENT_BACKUP_NAME"
-  elif command -v scutil > /dev/null 2>&1; then
-    scutil --get ComputerName | tr ' ' '-' | LC_ALL=C tr -cd 'A-Za-z0-9-'
+  elif [ -x /usr/sbin/scutil ]; then
+    /usr/sbin/scutil --get ComputerName | tr ' ' '-' | LC_ALL=C tr -cd 'A-Za-z0-9-'
   else
     hostname -s
   fi
