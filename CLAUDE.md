@@ -45,6 +45,7 @@ Personal portable dev environment. Managed as a side project.
 | claude/ | Claude Code statusline. `~/.claude/settings.json` stays machine-local; the installer sets only the statusLine key |
 | pi/ | Pi custom footer extension. The installer links it into `~/.pi/agent/extensions/` and leaves settings and credentials machine-local |
 | agent-deck/ | the `[tmux]` tables and Pi footer detection agent-deck needs. `~/.config/agent-deck/config.toml` stays machine-local because agent-deck rewrites it; the installer adds the tables when missing and otherwise only checks them |
+| backup/ | daily `rclone copy` of agent session data to an encrypted crypt remote, plus the systemd timer or launchd agent that runs it. The remote and its password stay machine-local |
 | hosts/ | per-machine shell config and written record, named by short hostname |
 | scripts/ | shared install helpers, `doctor.sh`, `requirements.tsv`, terminfo push, tmux session ordering |
 | starship/ | starship.toml |
@@ -68,7 +69,7 @@ Personal portable dev environment. Managed as a side project.
 Format: `<type>(<scope>): <summary>`
 
 - **type**: `feat` | `fix` | `chore` | `refactor` | `docs`
-- **scope**: `nvim` | `tmux` | `zsh` | `git` | `ghostty` | `starship` | `pi` | `scripts`
+- **scope**: `nvim` | `tmux` | `zsh` | `git` | `ghostty` | `starship` | `pi` | `backup` | `scripts`
 - Template auto-loads via `git/gitmessage` — runs on every `git commit`
 
 ## Known Issues

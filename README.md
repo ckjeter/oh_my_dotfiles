@@ -24,6 +24,7 @@ It clones the repo, runs the install script, and tells you which tools are missi
 | Ghostty | `ghostty/` | Terminal config, laptop only |
 | Claude Code | `claude/` | Status line script, wired into a machine-local `~/.claude/settings.json` |
 | Pi | `pi/` | Custom footer extension showing directory, branch, model, context, tokens, and cost |
+| Agent backup | `backup/` | Daily encrypted copy of agent session data to an rclone crypt remote |
 
 ---
 
